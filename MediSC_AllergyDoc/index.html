@@ -1,0 +1,1222 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 문진 - 온보딩</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css?v=15" />
+</head>
+<body>
+  <!--
+    #app-viewport : 실제 화면에 보여지는 반응형 컨테이너 (모바일 폭 기준)
+    #stage        : Figma 프레임과 동일한 137 x 147 좌표계. 모든 화면(.screen)은
+                     이 좌표계를 기준으로 절대 좌표를 사용하며, script.js가
+                     #app-viewport 크기에 맞춰 #stage 전체를 균일하게 scale 한다.
+                     -> 이후 onboarding 2~5, 환자번호, 이미지 업로드, 문진, 완료
+                        화면도 같은 좌표계를 공유하는 .screen 섹션으로 추가하면 된다.
+  -->
+  <div id="app-viewport">
+    <div id="stage">
+
+      <!-- ===== Screen: onboarding-1 =====
+           "ob-step" carries the shared onboarding background/next-button/
+           progress-dot styling. Only this screen's own content elements
+           (title/subtitle/illustration below) are specific to step 1. -->
+      <section class="screen ob-step is-active" data-screen="onboarding-1" data-node-id="163:2">
+        <img src="assets/divider-line.svg" alt="" class="ob-divider" data-node-id="163:11" />
+
+        <h1 class="ob-title" data-node-id="163:26">환영합니다!</h1>
+
+        <p class="ob-subtitle" data-node-id="163:27">
+          AI 문진 시스템을 통해 진료 전 필요한 정보를 쉽고 빠르게 확인합니다.
+        </p>
+
+        <img
+          src="assets/doctor-illustration.png"
+          alt="AI 문진 도우미 캐릭터"
+          class="ob-illustration"
+          data-node-id="163:28"
+        />
+
+        <!-- 5-step pagination: reused as-is on every onboarding step, only
+             data-active-dot changes. script.js turns it into the right dot. -->
+        <div class="ob-progress" data-active-dot="1" data-node-id="163:18">
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+        </div>
+
+        <button type="button" class="ob-next" data-node-id="163:14" data-next="onboarding-2">
+          <span class="ob-next__label" data-node-id="163:15">다음</span>
+          <img src="assets/arrow-next.svg" alt="" class="ob-next__arrow" data-node-id="163:16" />
+        </button>
+      </section>
+
+      <!-- ===== Screen: onboarding-2 (Figma node 163:29) ===== -->
+      <section class="screen ob-step ob-step--onboarding-2" data-screen="onboarding-2" data-node-id="163:29">
+        <img
+          src="assets/onboarding2-robot.png"
+          alt="AI 문진 로봇 캐릭터"
+          class="ob2-illustration"
+          data-node-id="2010:763"
+        />
+
+        <h1 class="ob2-title" data-node-id="163:61">AI 문진이란 무엇인가요?</h1>
+
+        <p class="ob2-body" data-node-id="163:62">
+          저희 Allergy Doc AI가<br />몇 가지 질문을 드려 증상을 더 정확하게 파악하고,<br />의료진이
+          진료에 집중할 수 있도록 돕습니다.
+        </p>
+
+        <img
+          src="assets/onboarding2-steps.svg"
+          alt=""
+          class="ob2-steps-icons"
+          data-node-id="163:31"
+        />
+        <img
+          src="assets/onboarding2-mic-icon.svg"
+          alt=""
+          class="ob2-mic-icon"
+          data-node-id="163:67"
+        />
+
+        <span class="ob2-step-label ob2-step-label--1" data-node-id="163:63">환자정보 확인</span>
+        <span class="ob2-step-label ob2-step-label--2" data-node-id="163:64">증상사진 (선택)</span>
+        <span class="ob2-step-label ob2-step-label--3" data-node-id="163:65">AI 문진 진행</span>
+        <span class="ob2-step-label ob2-step-label--4" data-node-id="163:66">의료진 상담</span>
+
+        <div class="ob-progress" data-active-dot="2" data-node-id="171:61">
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+        </div>
+
+        <button type="button" class="ob-next" data-node-id="163:48" data-next="onboarding-3">
+          <span class="ob-next__label" data-node-id="163:49">다음</span>
+          <img src="assets/arrow-next.svg" alt="" class="ob-next__arrow" data-node-id="163:50" />
+        </button>
+      </section>
+
+      <!-- ===== Screen: onboarding-3 (Figma node 163:69) =====
+           Hero visual here is 4 layered/rotated blurred-ellipse SVGs that
+           together read as a soft shield glow (same "blob" technique the
+           file uses elsewhere), so each is positioned/rotated exactly as
+           Figma reports rather than approximated. -->
+      <section class="screen ob-step ob-step--onboarding-3" data-screen="onboarding-3" data-node-id="163:69">
+        <div class="ob3-blob ob3-blob--1" data-node-id="163:71" aria-hidden="true">
+          <div class="ob3-blob__inner">
+            <img src="assets/onboarding3-shield-1.svg" alt="" />
+          </div>
+        </div>
+        <div class="ob3-blob ob3-blob--2" data-node-id="163:72" aria-hidden="true">
+          <div class="ob3-blob__inner">
+            <img src="assets/onboarding3-shield-2.svg" alt="" />
+          </div>
+        </div>
+        <div class="ob3-blob ob3-blob--3" data-node-id="163:79" aria-hidden="true">
+          <div class="ob3-blob__inner">
+            <img src="assets/onboarding3-shield-3.svg" alt="" />
+          </div>
+        </div>
+        <div class="ob3-blob ob3-blob--4" data-node-id="163:80" aria-hidden="true">
+          <div class="ob3-blob__inner">
+            <img src="assets/onboarding3-shield-4.svg" alt="" />
+          </div>
+        </div>
+
+        <img
+          src="assets/onboarding3-shield-image.png"
+          alt="개인정보 보호 shield"
+          class="ob3-shield-image"
+          data-node-id="2010:683"
+        />
+
+        <h1 class="ob3-title" data-node-id="163:93">당신의 소중한 개인정보를 보호합니다</h1>
+
+        <img src="assets/onboarding3-check.svg" alt="" class="ob3-check ob3-check--1" data-node-id="163:73" />
+        <p class="ob3-bullet ob3-bullet--1" data-node-id="163:94">모든 정보는 암호화되어 안전하게 저장됩니다.</p>
+
+        <img src="assets/onboarding3-check.svg" alt="" class="ob3-check ob3-check--2" data-node-id="163:75" />
+        <p class="ob3-bullet ob3-bullet--2" data-node-id="163:95">진료 목적 외에는 사용되지 않습니다.</p>
+
+        <img src="assets/onboarding3-check.svg" alt="" class="ob3-check ob3-check--3" data-node-id="163:77" />
+        <p class="ob3-bullet ob3-bullet--3" data-node-id="163:96">의료진만 정보에 접근할 수 있습니다.</p>
+
+        <div class="ob3-policy" data-node-id="163:97">
+          <img src="assets/onboarding3-lock.svg" alt="" class="ob3-policy__lock" data-node-id="163:98" />
+          <p class="ob3-policy__text" data-node-id="163:100">
+            개인정보 처리방침은 언제든지 확인하실 수 있습니다.
+          </p>
+        </div>
+
+        <div class="ob-progress" data-active-dot="3" data-node-id="171:68">
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+        </div>
+
+        <button type="button" class="ob-next" data-node-id="163:81" data-next="onboarding-4">
+          <span class="ob-next__label" data-node-id="163:82">다음</span>
+          <img src="assets/arrow-next.svg" alt="" class="ob-next__arrow" data-node-id="163:83" />
+        </button>
+      </section>
+
+      <!-- ===== Screen: onboarding-4 (Figma node 163:101) ===== -->
+      <section class="screen ob-step ob-step--onboarding-4" data-screen="onboarding-4" data-node-id="163:101">
+        <img
+          src="assets/onboarding4-ai-illustration.png"
+          alt="AI 로봇 캐릭터"
+          class="ob4-illustration"
+          data-node-id="166:118"
+        />
+
+        <h1 class="ob4-title" data-node-id="166:116">AI의 한계를 안내드립니다</h1>
+
+        <span class="ob4-index ob4-index--1" data-node-id="168:9">01.</span>
+        <p class="ob4-item ob4-item--1" data-node-id="168:12">
+          질문이나 이해가 항상 완벽하지 않을 수 있어 필요한 경우 의료진이 추가 질문을 진행할 수
+          있습니다.
+        </p>
+
+        <span class="ob4-index ob4-index--2" data-node-id="168:10">02.</span>
+        <p class="ob4-item ob4-item--2" data-node-id="168:13">
+          정확도에는 한계가 있어 입력한 정보와 사진의 품질에 따라 결과가 달라질 수 있습니다.
+        </p>
+
+        <span class="ob4-index ob4-index--3" data-node-id="168:11">03.</span>
+        <p class="ob4-item ob4-item--3" data-node-id="168:14">
+          진료를 돕는 보조 도구이며, 최종 진단과 치료는 의료진이 결정합니다.
+        </p>
+
+        <div class="ob-progress" data-active-dot="4" data-node-id="171:75">
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+        </div>
+
+        <button type="button" class="ob-next" data-node-id="163:102" data-next="onboarding-5">
+          <span class="ob-next__label" data-node-id="163:103">다음</span>
+          <img src="assets/arrow-next.svg" alt="" class="ob-next__arrow" data-node-id="163:104" />
+        </button>
+      </section>
+
+      <!-- ===== Screen: onboarding-5 (Figma node 168:19) =====
+           "data-consent-gate": script.js keeps this screen's [data-next]
+           button disabled until every checkbox inside is checked. -->
+      <section class="screen ob-step ob-step--onboarding-5" data-screen="onboarding-5" data-node-id="168:19" data-consent-gate>
+        <img
+          src="assets/onboarding5-robot.png"
+          alt="AI 로봇 캐릭터"
+          class="ob5-illustration"
+          data-node-id="171:50"
+        />
+
+        <h1 class="ob5-title" data-node-id="168:33">이용 동의</h1>
+        <p class="ob5-subtitle" data-node-id="170:2">
+          Allergy Doc 서비스를 이용하기 전에 아래 내용을 확인하고 동의해 주세요.
+        </p>
+
+        <label class="ob5-check ob5-check--1">
+          <input type="checkbox" class="ob5-check__input" data-node-id="169:42" />
+          <span class="ob5-check__box" aria-hidden="true"></span>
+        </label>
+        <p class="ob5-text ob5-text--1" data-node-id="168:38">
+          AI 기반 문진 서비스의 목적과 기능을 이해했으며, 진료 전 문진을 위해 서비스를 이용하는
+          것에 동의합니다.
+        </p>
+
+        <label class="ob5-check ob5-check--2">
+          <input type="checkbox" class="ob5-check__input" data-node-id="171:45" />
+          <span class="ob5-check__box" aria-hidden="true"></span>
+        </label>
+        <p class="ob5-text ob5-text--2" data-node-id="168:39">
+          입력한 개인정보, 증상 정보 및 문진 내용은 진료 지원 및 의료 서비스 제공을 위해
+          수집·이용됩니다.
+        </p>
+
+        <label class="ob5-check ob5-check--3">
+          <input type="checkbox" class="ob5-check__input" data-node-id="171:47" />
+          <span class="ob5-check__box" aria-hidden="true"></span>
+        </label>
+        <p class="ob5-text ob5-text--3" data-node-id="168:40">
+          업로드한 증상 사진과 문진 내용은 의료진의 진료 참고 자료 및 AI 분석을 위해 활용될 수
+          있습니다.
+        </p>
+
+        <div class="ob-progress" data-active-dot="5" data-node-id="171:82">
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+          <span class="ob-progress__dot"></span>
+        </div>
+
+        <button type="button" class="ob-next" data-node-id="168:21" data-next="text-size-control" disabled>
+          <span class="ob-next__label" data-node-id="168:22">다음</span>
+          <img src="assets/arrow-next.svg" alt="" class="ob-next__arrow" data-node-id="168:23" />
+        </button>
+      </section>
+
+      <!-- ===== Screen: text-size-control (Figma node 2019:878) =====
+           Accessibility text-size choice between onboarding and Patient ID.
+           Two native radio inputs (real mutual-exclusion + keyboard support)
+           each wrapped in a <label> that covers the whole card, so clicking
+           anywhere in the card selects it. CSS :has(:checked) drives the
+           selected-state border/dot/label-color reactively — no JS needed
+           for that part. script.js only enables the CTA and persists the
+           chosen scale (localStorage + a global --text-scale CSS variable
+           on <html>) so every later screen picks it up automatically. -->
+      <section class="screen" data-screen="text-size-control" data-node-id="2019:878">
+        <div class="tsc-card-bg" data-node-id="2019:881"></div>
+
+        <p class="tsc-title" data-node-id="2019:885">문진을 시작하기 전에<br />화면 글자 크기를 선택해주세요</p>
+        <p class="tsc-subtitle" data-node-id="2019:886">본인에게 편한 크기로 문진을 이용하실 수 있습니다.</p>
+        <img src="assets/divider-line.svg" alt="" class="tsc-divider" data-node-id="2019:891" />
+
+        <label class="tsc-card tsc-card--default" data-node-id="2019:973">
+          <input
+            type="radio"
+            name="text-size-choice"
+            class="tsc-radio__input"
+            value="1"
+            data-node-id="2019:981"
+          />
+          <span class="tsc-radio__circle" aria-hidden="true"></span>
+          <span class="tsc-card__label-text" data-node-id="2019:984">기본 크기</span>
+          <span class="tsc-card__sublabel" data-node-id="2019:986">현재 크기로 이용하기</span>
+          <span class="tsc-preview-box" data-node-id="2019:988"></span>
+          <span class="tsc-preview-input" data-node-id="2019:990"></span>
+          <span class="tsc-preview-title" data-node-id="2019:992">환자번호를 입력하세요.</span>
+          <span class="tsc-preview-placeholder" data-node-id="2019:996">예: P0001</span>
+        </label>
+
+        <label class="tsc-card tsc-card--large" data-node-id="2019:977">
+          <input
+            type="radio"
+            name="text-size-choice"
+            class="tsc-radio__input"
+            value="1.25"
+            data-node-id="2019:1003"
+          />
+          <span class="tsc-radio__circle" aria-hidden="true"></span>
+          <span class="tsc-card__label-text" data-node-id="2019:1000">크게 보기</span>
+          <span class="tsc-card__sublabel" data-node-id="2019:1001">더 큰 글씨로 이용하기</span>
+          <span class="tsc-preview-box" data-node-id="2019:998"></span>
+          <span class="tsc-preview-input" data-node-id="2019:999"></span>
+          <span class="tsc-preview-title tsc-preview-title--large" data-node-id="2019:1002">환자번호를 입력하세요.</span>
+          <span class="tsc-preview-placeholder tsc-preview-placeholder--large" data-node-id="2019:1004">예: P0001</span>
+        </label>
+
+        <button type="button" class="tsc-next" data-node-id="2019:883" data-next="patient-id" disabled>
+          <span class="ob-next__label" data-node-id="2019:888">문진 시작하기</span>
+          <img src="assets/arrow-next.svg" alt="" class="ob-next__arrow" data-node-id="2019:894" />
+        </button>
+
+        <div class="tsc-footer-bar" data-node-id="2019:904"></div>
+        <p class="tsc-copyright" data-node-id="2019:906">Copyright © snuh.org · snu.ac.kr</p>
+      </section>
+
+      <!-- ===== Screen: patient-id (Figma "user login", node 2005:57) =====
+           "data-patient-id-screen": script.js wires the input <-> button
+           disabled state <-> top Patient ID display for this screen. -->
+      <section class="screen" data-screen="patient-id" data-node-id="2005:57" data-patient-id-screen>
+        <div class="pid-card" data-node-id="2005:60"></div>
+
+        <input
+          type="text"
+          class="pid-input"
+          data-node-id="2005:61"
+          placeholder="예: P0001"
+          autocomplete="off"
+          maxlength="20"
+        />
+
+        <div class="pid-helper-box" data-node-id="2005:63"></div>
+
+        <p class="pid-title" data-node-id="2005:64">환자번호를 입력하세요.</p>
+        <p class="pid-subtitle" data-node-id="2005:65">환자번호를 입력하시면 AI 문진을 시작할 수 있습니다.</p>
+        <p class="pid-label" data-node-id="2005:66">환자번호</p>
+        <p class="pid-helper-text" data-node-id="2005:69">
+          환자번호는 진료 예약 시 안내받은 번호를 입력해주세요.
+        </p>
+
+        <img src="assets/divider-line.svg" alt="" class="pid-divider" data-node-id="2005:70" />
+        <img
+          src="assets/patient-id-vector-icon.svg"
+          alt=""
+          class="pid-vector-icon"
+          data-node-id="2005:71"
+        />
+
+        <button type="button" class="pid-next" data-node-id="2005:62" data-next="image-upload" disabled>
+          <span class="ob-next__label" data-node-id="2005:67">다음</span>
+          <img src="assets/arrow-next.svg" alt="" class="ob-next__arrow" data-node-id="2005:73" />
+        </button>
+
+        <div class="pid-footer-box" data-node-id="2005:72"></div>
+
+        <img
+          src="assets/patient-id-time-icon-bg.svg"
+          alt=""
+          class="pid-time-icon-bg"
+          data-node-id="2005:75"
+        />
+        <img
+          src="assets/patient-id-privacy-icon-bg.svg"
+          alt=""
+          class="pid-privacy-icon-bg"
+          data-node-id="2005:76"
+        />
+        <img
+          src="assets/patient-id-clock-icon.svg"
+          alt=""
+          class="pid-clock-icon"
+          data-node-id="2005:77"
+        />
+        <img
+          src="assets/patient-id-privacy-icon.svg"
+          alt=""
+          class="pid-privacy-icon"
+          data-node-id="2005:97"
+        />
+
+        <p class="pid-time-label" data-node-id="2005:79">예상 소요 시간</p>
+        <p class="pid-time-value" data-node-id="2005:80">3 ~ 5 분</p>
+        <p class="pid-privacy-label" data-node-id="2005:81">개인정보 보호</p>
+        <p class="pid-privacy-text" data-node-id="2005:82">
+          입력하신 정보는 안전하게 처리되며 진료 목적 외에는 사용되지 않습니다.
+        </p>
+
+        <div class="pid-footer-bar" data-node-id="2005:84"></div>
+        <p class="pid-copyright" data-node-id="2005:96">Copyright © snuh.org · snu.ac.kr</p>
+
+        <div class="pid-textsize" data-node-id="2009:214">
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--small"
+            data-node-id="2009:215"
+            aria-label="기본 글씨 크기 (100%)"
+          ></button>
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--large"
+            data-node-id="2009:216"
+            aria-label="큰 글씨 크기 (125%)"
+          ></button>
+          <p class="pid-textsize__label pid-textsize__label--small" data-node-id="2009:217">작게</p>
+          <p class="pid-textsize__label pid-textsize__label--large" data-node-id="2009:218">크게</p>
+          <p class="pid-textsize__title" data-node-id="2009:219">화면 / 글씨 크기</p>
+          <img
+            src="assets/patient-id-textsize-icon-bg.svg"
+            alt=""
+            class="pid-textsize__icon-bg"
+            data-node-id="2009:220"
+          />
+          <p class="pid-textsize__icon-label" data-node-id="2009:221">가</p>
+        </div>
+
+        <img
+          src="assets/patient-id-progress-bg.svg"
+          alt=""
+          class="pid-progress-bg"
+          data-node-id="2005:99"
+        />
+        <span class="pid-step pid-step--1 is-active" data-node-id="2005:107">1. 환자번호</span>
+        <span class="pid-step pid-step--2" data-node-id="2005:110">2. 이미지 업로드</span>
+        <span class="pid-step pid-step--3" data-node-id="2005:108">3. 문진 챗봇</span>
+        <span class="pid-step pid-step--4" data-node-id="2005:109">4. 완료</span>
+
+        <p class="pid-display" id="pid-display" data-node-id="patient-id-display" aria-live="polite"></p>
+
+        <div class="pid-exit-bg" data-node-id="2005:112"></div>
+        <p class="pid-exit-label" data-node-id="2005:113">종료하기</p>
+      </section>
+
+      <!-- ===== Screen: image-upload / Step 2 (Figma node 2009:223) ===== -->
+      <section class="screen" data-screen="image-upload" data-node-id="2009:223">
+        <img
+          src="assets/image-upload-progress-bg.svg"
+          alt=""
+          class="pid-progress-bg"
+          data-node-id="2009:224"
+        />
+        <span class="pid-step pid-step--1" data-node-id="2009:232">1. 환자번호</span>
+        <span class="pid-step pid-step--2 is-active" data-node-id="2009:235">2. 이미지 업로드</span>
+        <span class="pid-step pid-step--3" data-node-id="2009:233">3. 문진 챗봇</span>
+        <span class="pid-step pid-step--4" data-node-id="2009:234">4. 완료</span>
+
+        <p class="pid-display iu-display" data-node-id="2009:293" aria-live="polite"></p>
+
+        <p class="iu-title" data-node-id="2009:247">증상 사진을 업로드해주세요.</p>
+        <p class="iu-subtitle" data-node-id="2009:249">
+          가능하면 증상 사진이 가장 잘 보이는 사진을 여러장 업로드 해주세요.<br />사진은 진료
+          전에 의료진이 확인하여 더 정확한 진료에 도움이 됩니다.
+        </p>
+
+        <p class="iu-uploaded-label" data-node-id="2009:262">
+          업로드한 사진 <span class="iu-uploaded-max" data-node-id="2009:248">(최대 5장)</span>
+        </p>
+        <span class="iu-counter" data-node-id="2009:263">0 / 5 장</span>
+
+        <div class="iu-dropzone" data-node-id="2009:267">
+          <div class="iu-empty-state">
+            <img
+              src="assets/image-upload-cloud-icon.svg"
+              alt=""
+              class="iu-cloud-icon"
+              data-node-id="2009:268"
+            />
+            <p class="iu-hint" data-node-id="2009:250">JPG, JPEG, PNG 파일 (최대 10MB)</p>
+          </div>
+          <div class="iu-thumbs" data-node-id="iu-thumbs"></div>
+        </div>
+
+        <button type="button" class="iu-action iu-action--camera iu-camera-trigger" data-node-id="2009:245">
+          <img
+            src="assets/image-upload-camera-icon.svg"
+            alt=""
+            class="iu-action__icon"
+            data-node-id="2009:270"
+          />
+          <span class="iu-action__label" data-node-id="2009:261">카메라로 촬영하기</span>
+        </button>
+        <button type="button" class="iu-action iu-action--file iu-file-trigger" data-node-id="2009:246">
+          <img
+            src="assets/image-upload-folder-icon.svg"
+            alt=""
+            class="iu-action__icon"
+            data-node-id="2009:274"
+          />
+          <span class="iu-action__label" data-node-id="2009:264">파일 선택</span>
+        </button>
+
+        <input
+          type="file"
+          class="iu-file-input"
+          accept="image/jpeg,image/png"
+          multiple
+          hidden
+        />
+        <input
+          type="file"
+          class="iu-camera-input"
+          accept="image/*"
+          capture="environment"
+          hidden
+        />
+
+        <label class="iu-no-photo" data-node-id="2009:276">
+          <input type="checkbox" class="iu-no-photo__input" />
+          <span class="iu-no-photo__box" aria-hidden="true"></span>
+          <span class="iu-no-photo__label" data-node-id="2009:265">증상 사진이 없습니다</span>
+        </label>
+
+        <div class="iu-guide-card" data-node-id="2009:236">
+          <p class="iu-guide-title" data-node-id="2009:266">사진 촬영 가이드</p>
+          <img
+            src="assets/image-upload-help-icon.svg"
+            alt=""
+            class="iu-guide-help-icon"
+            data-node-id="2009:239"
+          />
+
+          <img
+            src="assets/image-upload-check-icon.svg"
+            alt=""
+            class="iu-guide-icon iu-guide-icon--good-1"
+            data-node-id="2009:277"
+          />
+          <p class="iu-guide-text iu-guide-text--good-1" data-node-id="2009:251">밝은 곳에서 촬영</p>
+          <img
+            src="assets/image-upload-check-icon.svg"
+            alt=""
+            class="iu-guide-icon iu-guide-icon--good-2"
+            data-node-id="2009:280"
+          />
+          <p class="iu-guide-text iu-guide-text--good-2" data-node-id="2009:279">초점을 맞추고 가까이 촬영</p>
+          <img
+            src="assets/image-upload-check-icon.svg"
+            alt=""
+            class="iu-guide-icon iu-guide-icon--good-3"
+            data-node-id="2009:283"
+          />
+          <p class="iu-guide-text iu-guide-text--good-3" data-node-id="2009:282">증상이 선명하게 보이도록</p>
+          <img
+            src="assets/image-upload-good-example.png"
+            alt="좋은 예시 사진"
+            class="iu-guide-example iu-guide-example--good"
+            data-node-id="2009:291"
+          />
+
+          <img
+            src="assets/image-upload-close-icon.svg"
+            alt=""
+            class="iu-guide-icon iu-guide-icon--bad-1"
+            data-node-id="2009:237"
+          />
+          <p class="iu-guide-text iu-guide-text--bad-1" data-node-id="2009:252">흐릿한 사진</p>
+          <img
+            src="assets/image-upload-close-icon.svg"
+            alt=""
+            class="iu-guide-icon iu-guide-icon--bad-2"
+            data-node-id="2009:286"
+          />
+          <p class="iu-guide-text iu-guide-text--bad-2" data-node-id="2009:285">너무 멀리서 촬영</p>
+          <img
+            src="assets/image-upload-close-icon.svg"
+            alt=""
+            class="iu-guide-icon iu-guide-icon--bad-3"
+            data-node-id="2009:288"
+          />
+          <p class="iu-guide-text iu-guide-text--bad-3" data-node-id="2009:290">어두운 환경</p>
+          <img
+            src="assets/image-upload-bad-example.png"
+            alt="좋지 않은 예시 사진"
+            class="iu-guide-example iu-guide-example--bad"
+            data-node-id="2009:292"
+          />
+        </div>
+
+        <button type="button" class="iu-prev" data-node-id="2009:254" data-next="patient-id">
+          <span class="iu-prev__label" data-node-id="2009:255">이전</span>
+        </button>
+        <button type="button" class="iu-next" data-node-id="2009:259" data-next="chat" disabled>
+          <span class="iu-next__label" data-node-id="2009:260">다음</span>
+        </button>
+
+        <div class="pid-exit-bg" data-node-id="2009:256"></div>
+        <p class="pid-exit-label" data-node-id="2009:257">종료하기</p>
+
+        <div class="pid-footer-bar" data-node-id="2009:295"></div>
+        <p class="pid-copyright" data-node-id="2009:307">Copyright © snuh.org · snu.ac.kr</p>
+
+        <div class="pid-textsize" data-node-id="2009:395">
+          <button type="button" class="pid-textsize__btn pid-textsize__btn--small" aria-label="기본 글씨 크기 (100%)"></button>
+          <button type="button" class="pid-textsize__btn pid-textsize__btn--large" aria-label="큰 글씨 크기 (125%)"></button>
+          <p class="pid-textsize__label pid-textsize__label--small" data-node-id="2009:398">작게</p>
+          <p class="pid-textsize__label pid-textsize__label--large" data-node-id="2009:399">크게</p>
+          <p class="pid-textsize__title" data-node-id="2009:400">화면 / 글씨 크기</p>
+          <img
+            src="assets/patient-id-textsize-icon-bg.svg"
+            alt=""
+            class="pid-textsize__icon-bg"
+            data-node-id="2009:401"
+          />
+          <p class="pid-textsize__icon-label" data-node-id="2009:402">가</p>
+        </div>
+      </section>
+
+      <!-- ===== Screen: chat / Step 3 "문진 챗봇" voice mode (Figma node 2022:1182) ===== -->
+      <section class="screen" data-screen="chat" data-node-id="2022:1182">
+        <img src="assets/chat-progress-bg.svg" alt="" class="pid-progress-bg" data-node-id="2022:1183" />
+        <span class="pid-step pid-step--1" data-node-id="2022:1191">1. 환자번호</span>
+        <span class="pid-step pid-step--2" data-node-id="2022:1194">2. 이미지 업로드</span>
+        <span class="pid-step pid-step--3 is-active" data-node-id="2022:1192">3. 문진 챗봇</span>
+        <span class="pid-step pid-step--4" data-node-id="2022:1193">4. 완료</span>
+        <p class="pid-display chat-display" data-node-id="2022:1211" aria-live="polite"></p>
+
+        <span class="chat-toggle-track" data-node-id="2025:1570"></span>
+        <span class="chat-toggle-thumb" data-node-id="2025:1571"></span>
+        <span class="chat-toggle-label chat-toggle-label--voice" data-node-id="2025:1572">음성 모드</span>
+        <span class="chat-toggle-label chat-toggle-label--text" data-node-id="2025:1573">채팅 모드</span>
+
+        <!-- ===== Voice mode content (everything below, until the closing
+             div) — script.js's setChatMode() hides this whole group at once
+             when 채팅 모드 is selected. Nothing inside changed; it's the
+             same markup as before, just wrapped so mode-switching doesn't
+             need to touch each element individually. -->
+        <div class="chat-voicemode" data-chat-voicemode>
+        <img
+          src="assets/chat-bg-photo.png"
+          alt="AI 문진 의료진"
+          class="chat-bg-photo"
+          data-node-id="2022:1453"
+        />
+
+        <div class="chat-bubble" data-node-id="2023:1459"></div>
+        <p class="chat-bubble__text" data-node-id="2023:1460">
+          안녕하세요. 진료 전 두드러기 문진 도와드리겠습니다.<br />먼저 환자분의 성함과 증상이 언제
+          처음 나타났는지 여쭤봐도 될까요?
+        </p>
+        <img
+          src="assets/chat-speaker-icon-1.svg"
+          alt=""
+          class="chat-bubble__speaker"
+          data-node-id="2023:1461"
+        />
+
+        <div class="chat-controlbar" data-node-id="2023:1464"></div>
+
+        <!-- AI 음성 playback volume (Figma node 2030:2820 slider group, icon
+             swapped to the speaker icon at 2030:2815) — replaces the old
+             redundant standalone mic + on/off speaker icons, since the
+             central primary mic button below already covers voice input. -->
+        <div class="chat-volume" data-node-id="2030:2820">
+          <img src="assets/chat-volume-speaker-icon.svg" alt="" class="chat-volume__icon" aria-hidden="true" data-node-id="2030:2815" />
+          <input
+            type="range"
+            class="chat-volume__slider"
+            min="0"
+            max="100"
+            step="1"
+            value="50"
+            aria-label="AI 음성 볼륨"
+            data-volume-slider
+          />
+        </div>
+
+        <!-- Central mic + its waveform, grouped only so idle/listening state
+             (script.js's setListening()) can be toggled with a single class
+             here and read by every descendant below — none of these
+             elements' own absolute positioning changes because of this
+             wrapper (it sets no position/layout of its own). -->
+        <div class="chat-voice-input" data-voice-input>
+          <div class="chat-mic-main-bg" data-node-id="2024:1469"></div>
+          <img src="assets/chat-vector-icon.svg" alt="" class="chat-ctrl-icon chat-ctrl-icon--main" data-node-id="2025:1470" />
+          <span class="chat-ctrl-label chat-ctrl-label--main" data-mic-status-label data-node-id="2025:1472">말씀해 주세요</span>
+          <button
+            type="button"
+            class="chat-mic-toggle"
+            data-mic-toggle
+            aria-pressed="false"
+            aria-label="음성 입력 시작"
+          ></button>
+
+          <!-- Waveform, split into its own clipped zone on each side of the
+               mic (Figma bar groups 2030:2768-2809) so it can never render
+               under the mic circle or bleed into 대화기록 — each zone owns
+               a fixed width and clips anything that would overflow it. -->
+          <div class="chat-waveform-zone chat-waveform-zone--left" aria-hidden="true">
+            <div class="chat-waveform">
+              <span class="chat-waveform__bar chat-waveform__bar--a"></span>
+              <span class="chat-waveform__bar chat-waveform__bar--b"></span>
+              <span class="chat-waveform__bar chat-waveform__bar--c"></span>
+              <span class="chat-waveform__bar chat-waveform__bar--a"></span>
+              <span class="chat-waveform__bar chat-waveform__bar--b"></span>
+            </div>
+          </div>
+          <div class="chat-waveform-zone chat-waveform-zone--right" aria-hidden="true">
+            <div class="chat-waveform">
+              <span class="chat-waveform__bar chat-waveform__bar--a"></span>
+              <span class="chat-waveform__bar chat-waveform__bar--b"></span>
+              <span class="chat-waveform__bar chat-waveform__bar--c"></span>
+              <span class="chat-waveform__bar chat-waveform__bar--a"></span>
+              <span class="chat-waveform__bar chat-waveform__bar--b"></span>
+            </div>
+          </div>
+        </div>
+
+        <img src="assets/chat-ellipse51.svg" alt="" class="chat-ctrl-bg chat-ctrl-bg--transcript" data-node-id="2025:1532" />
+        <img src="assets/chat-vector2.svg" alt="" class="chat-ctrl-icon chat-ctrl-icon--transcript" data-node-id="2025:1600" />
+        <span class="chat-ctrl-label chat-ctrl-label--transcript" data-node-id="2025:1567">대화기록</span>
+        <!-- Invisible hit target over the existing transcript circle — same
+             pattern as .chat-mic-toggle, adds click behavior without
+             touching the button's own visuals. -->
+        <button
+          type="button"
+          class="chat-transcript-toggle"
+          data-history-toggle
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-label="대화 기록 열기"
+        ></button>
+
+        <img src="assets/chat-ellipse52.svg" alt="" class="chat-ctrl-bg chat-ctrl-bg--end" data-node-id="2025:1558" />
+        <img src="assets/chat-callend-icon.svg" alt="" class="chat-ctrl-icon chat-ctrl-icon--end" data-node-id="2025:1601" />
+        <span class="chat-ctrl-label chat-ctrl-label--end" data-node-id="2025:1568">종료하기</span>
+        </div>
+
+        <!-- ===== Chat (text) mode content (Figma node 2052:3304,
+             "chatbot_text") — the alternative interaction mode for this
+             same screen. Hidden by default; script.js's setChatMode()
+             toggles this and .chat-voicemode oppositely, so nothing here
+             ever renders at the same time as the voice-mode block above.
+             Left column: AI helper photo + caption. Right column: progress
+             + scrolling message list (mock conversation seeded in
+             script.js's CHAT_MESSAGES, quick-select chips rendered inline
+             after the message that offers them) + input bar. -->
+        <div class="chat-textmode" data-chat-textmode hidden>
+          <img
+            src="assets/chat-textmode-ai-photo.png"
+            alt="AI 문진 도우미"
+            class="chat-textmode-photo"
+            data-node-id="2052:3305"
+          />
+          <div class="chat-textmode-caption" data-node-id="2052:3333">
+            <p class="chat-textmode-caption__text" data-node-id="2052:3334">
+              편안한 환경에서 천천히 답변해 주세요.
+            </p>
+          </div>
+          <div class="chat-textmode-divider" aria-hidden="true" data-node-id="2052:3344"></div>
+
+          <div class="chat-textmode-panel">
+            <div class="chat-textmode-progress">
+              <div class="chat-textmode-progress__row">
+                <p class="chat-textmode-progress__label" data-node-id="2052:3347">문진 진행 상황</p>
+                <p class="chat-textmode-progress__count">
+                  <span class="chat-textmode-progress__count-current" data-progress-current data-node-id="2052:3351">3</span
+                  ><span class="chat-textmode-progress__count-total" data-node-id="2052:3350"> / <span data-progress-total>12</span></span>
+                </p>
+              </div>
+              <div class="chat-textmode-progress__track" data-node-id="2052:3348">
+                <div class="chat-textmode-progress__fill" data-progress-fill data-node-id="2052:3349"></div>
+              </div>
+            </div>
+
+            <!-- macOS Chrome's overlay scrollbar mode ignores custom
+                 ::-webkit-scrollbar width (it keeps thumb color/shape but
+                 renders at the system's own overlay width regardless) —
+                 confirmed by a real screenshot showing our thumb color at
+                 full system width. The native scrollbar is hidden
+                 entirely (style.css) and this plain div stands in for it,
+                 sized/positioned by script.js's updateChatScrollbarThumb()
+                 so its width is actually guaranteed. -->
+            <div class="chat-textmode-messages-wrap">
+              <div class="chat-textmode-messages" data-chat-messages aria-live="polite"></div>
+              <div class="chat-textmode-scrollbar-thumb" data-scroll-indicator aria-hidden="true"></div>
+            </div>
+
+            <div class="chat-textmode-inputbar" data-node-id="2052:3386">
+              <textarea
+                class="chat-textmode-input"
+                data-chat-input
+                rows="1"
+                placeholder="답변을 입력해 주세요..."
+                aria-label="답변 입력"
+                data-node-id="2052:3387"
+              ></textarea>
+              <button type="button" class="chat-textmode-send" data-chat-send disabled aria-label="답변 전송">
+                <span class="chat-textmode-send__icon" aria-hidden="true" data-node-id="2052:3388"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="iu-prev" data-node-id="2022:1222" data-next="image-upload">
+          <span class="iu-prev__label" data-node-id="2022:1223">이전</span>
+        </button>
+        <button type="button" class="iu-next iu-next--end" data-node-id="2022:1195" data-next="done">
+          <span class="iu-next__label" data-node-id="2022:1196">문진 종료하기</span>
+        </button>
+
+        <div class="pid-footer-bar" data-node-id="2022:1198"></div>
+        <p class="pid-copyright" data-node-id="2022:1210">Copyright © snuh.org · snu.ac.kr</p>
+
+        <div class="pid-textsize" data-node-id="2025:1585">
+          <button type="button" class="pid-textsize__btn pid-textsize__btn--small" aria-label="기본 글씨 크기 (100%)"></button>
+          <button type="button" class="pid-textsize__btn pid-textsize__btn--large" aria-label="큰 글씨 크기 (125%)"></button>
+          <p class="pid-textsize__label pid-textsize__label--small" data-node-id="2025:1588">작게</p>
+          <p class="pid-textsize__label pid-textsize__label--large" data-node-id="2025:1589">크게</p>
+          <p class="pid-textsize__title" data-node-id="2025:1590">화면 / 글씨 크기</p>
+          <img
+            src="assets/patient-id-textsize-icon-bg.svg"
+            alt=""
+            class="pid-textsize__icon-bg"
+            data-node-id="2025:1591"
+          />
+          <p class="pid-textsize__icon-label" data-node-id="2025:1592">가</p>
+        </div>
+
+        <!-- ===== Guide popup modal (Figma node 2001:4), guide 1 of 3 =====
+             Nested inside the chat screen (not a sibling .screen) so it can
+             only ever appear over this screen and never affects the others.
+             script.js's GUIDE_STEPS array is the extension point for guides
+             2–3: add their content there and the same modal markup below
+             re-renders from whichever step is current — no new DOM needed. -->
+        <div class="chat-guide-overlay" data-guide-overlay hidden>
+          <div class="chat-guide-modal" data-node-id="2001:48">
+            <img src="assets/guide-number-badge-bg.svg" alt="" class="chat-guide-badge-bg" data-node-id="2001:58" />
+            <span class="chat-guide-number" data-guide-number data-node-id="2001:59">1</span>
+
+            <button type="button" class="chat-guide-close" data-guide-close aria-label="가이드 닫기">×</button>
+
+            <button type="button" class="chat-guide-chevron chat-guide-chevron--prev" data-guide-prev aria-label="이전 가이드">
+              <img src="assets/guide-chevron.svg" alt="" />
+            </button>
+            <button type="button" class="chat-guide-chevron chat-guide-chevron--next" data-guide-next aria-label="다음 가이드">
+              <img src="assets/guide-chevron.svg" alt="" />
+            </button>
+
+            <img src="assets/guide1-character.png" alt="" class="chat-guide-character" data-guide-character data-node-id="2001:3" />
+            <img src="assets/guide-decor-icon.svg" alt="" class="chat-guide-decor" data-node-id="2001:55" />
+
+            <h3 class="chat-guide-title" data-guide-title data-node-id="2001:51">또박또박 말씀해 주세요!</h3>
+            <p class="chat-guide-desc" data-guide-desc data-node-id="2001:52">
+              AI가 정확하게 이해할 수 있도록 천천히, 또렷하게 답변해 주세요.
+            </p>
+
+            <div class="chat-guide-card chat-guide-card--good" data-node-id="2001:60"></div>
+            <img src="assets/guide-check-icon.svg" alt="" class="chat-guide-card__icon chat-guide-card__icon--good" data-guide-good-icon data-node-id="2001:62" />
+            <span class="chat-guide-card__label chat-guide-card__label--good" data-guide-good-label data-node-id="2001:50">좋은 예</span>
+            <p class="chat-guide-card__text" data-guide-good-text data-node-id="2001:53">
+              “3일 전부터 팔에 두드러기가 생겼어요.”
+            </p>
+
+            <!-- Guide 2's "다음 질문 ↓" separator between its two cards (Figma
+                 node 2001:73). Guide 1 has no such element, so it stays
+                 hidden unless the current step provides `between` data. -->
+            <p class="chat-guide-between__label" data-guide-between-label hidden data-node-id="2001:121"></p>
+            <img src="assets/guide-arrow-down.svg" alt="" class="chat-guide-between__arrow" data-guide-between-arrow hidden data-node-id="2001:140" />
+
+            <div class="chat-guide-card chat-guide-card--bad" data-node-id="2001:61"></div>
+            <img src="assets/guide-x-icon.svg" alt="" class="chat-guide-card__icon chat-guide-card__icon--bad" data-guide-bad-icon data-node-id="2001:63" />
+            <span class="chat-guide-card__label chat-guide-card__label--bad" data-guide-bad-label data-node-id="2001:49">좋지 않은 예</span>
+            <p class="chat-guide-card__text" data-guide-bad-text data-node-id="2001:54">
+              “어...그게..... 음..... 아...”
+            </p>
+
+            <!-- Guide 3's third instruction card (Figma node 2003:225) —
+                 only guide 3 has three cards, so this stays hidden unless
+                 the current step provides `third` data. -->
+            <div class="chat-guide-card chat-guide-card--c3" data-guide-c3-card hidden data-node-id="2003:225"></div>
+            <img src="assets/guide-check-icon.svg" alt="" class="chat-guide-card__icon chat-guide-card__icon--c3" data-guide-c3-icon hidden data-node-id="2003:226" />
+            <p class="chat-guide-card__text chat-guide-card__text--c3" data-guide-c3-text hidden data-node-id="2003:224"></p>
+
+            <div class="chat-guide-dots" data-guide-dots data-node-id="2001:68">
+              <span class="chat-guide-dot"></span>
+              <span class="chat-guide-dot"></span>
+              <span class="chat-guide-dot"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Conversation history panel (Figma node 2025:1906) =====
+             Overlay + right-side drawer opened by the 대화기록 button.
+             Nested inside the chat screen like the guide popup above, so it
+             can only ever appear over this screen. script.js renders
+             .chat-history-list from the CONVERSATION_HISTORY array — this
+             markup only holds the panel chrome (close button, scroll
+             container), never the turn content itself. -->
+        <div class="chat-history-overlay" data-history-overlay hidden>
+          <aside class="chat-history-panel" role="dialog" aria-modal="true" aria-label="대화 기록" data-node-id="2025:1941">
+            <button type="button" class="chat-history-close" data-history-close aria-label="대화 기록 닫기">
+              <img src="assets/guide-decor-icon.svg" alt="" data-node-id="2025:1947" />
+            </button>
+            <div class="chat-history-list" data-history-list></div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ===== Screen: done / Step 4 완료 (Figma node 177:509) =====
+           Reached only via the chat screen's "문진 종료하기" button
+           (data-next="done", already wired by initNextButtons()'s generic
+           [data-next] handling — nothing new needed there). Reuses
+           .pid-progress-bg/.pid-step/.pid-footer-bar/.pid-copyright/
+           .pid-textsize verbatim, same as every other screen; only the
+           step-4-active progress background asset and this screen's own
+           completion content (icon/title/desc/buttons) are new. -->
+      <section class="screen" data-screen="done" data-node-id="177:509">
+        <img
+          src="assets/completion-progress-bg.svg"
+          alt=""
+          class="pid-progress-bg"
+          data-node-id="177:510"
+        />
+        <span class="pid-step pid-step--1" data-node-id="177:518">1. 환자번호</span>
+        <span class="pid-step pid-step--2" data-node-id="177:521">2. 이미지 업로드</span>
+        <span class="pid-step pid-step--3" data-node-id="177:519">3. 문진 챗봇</span>
+        <span class="pid-step pid-step--4 is-active" data-node-id="177:520">4. 완료</span>
+
+        <p class="pid-display done-display" data-node-id="177:538" aria-live="polite"></p>
+
+        <img
+          src="assets/completion-check-icon.svg"
+          alt=""
+          class="done-check-icon"
+          data-node-id="2052:3445"
+        />
+
+        <h1 class="done-title" data-node-id="2052:3427">문진이 완료되었습니다.</h1>
+        <p class="done-desc" data-node-id="2052:3429">
+          입력하신 내용이 정상적으로 제출되었습니다.<br />
+          아래 설문은 선택 사항이며, 서비스 개선을 위해 약 1분 정도 소요됩니다.
+        </p>
+
+        <button
+          type="button"
+          class="done-btn done-btn--exit"
+          data-done-exit
+          data-next="onboarding-1"
+          data-node-id="2052:3431"
+        >
+          <span class="done-btn__label" data-node-id="2052:3432">나가기</span>
+        </button>
+        <button
+          type="button"
+          class="done-btn done-btn--survey"
+          data-next="survey-1"
+          data-node-id="2052:3434"
+        >
+          <span class="done-btn__label done-btn__label--survey" data-node-id="2052:3435">설문 참여하기</span>
+        </button>
+
+        <div class="pid-footer-bar" data-node-id="177:525"></div>
+        <p class="pid-copyright" data-node-id="177:537">Copyright © snuh.org · snu.ac.kr</p>
+
+        <div class="pid-textsize" data-node-id="2014:815">
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--small"
+            data-node-id="2014:816"
+            aria-label="기본 글씨 크기 (100%)"
+          ></button>
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--large"
+            data-node-id="2014:817"
+            aria-label="큰 글씨 크기 (125%)"
+          ></button>
+          <p class="pid-textsize__label pid-textsize__label--small" data-node-id="2014:818">작게</p>
+          <p class="pid-textsize__label pid-textsize__label--large" data-node-id="2014:819">크게</p>
+          <p class="pid-textsize__title" data-node-id="2014:820">화면 / 글씨 크기</p>
+          <img
+            src="assets/patient-id-textsize-icon-bg.svg"
+            alt=""
+            class="pid-textsize__icon-bg"
+            data-node-id="2014:821"
+          />
+          <p class="pid-textsize__icon-label" data-node-id="2014:822">가</p>
+        </div>
+      </section>
+
+      <!-- ===== Screen: survey-1 / post-visit survey page 1, Q1-Q5
+           (Figma node 2052:3447) =====
+           Reached from the done screen's "설문 참여하기" button
+           (data-next="survey-1"). Shares the same step-4-active header/
+           footer as the done screen (completion-progress-bg.svg,
+           .pid-step, .pid-display, .pid-footer-bar, .pid-copyright,
+           .pid-textsize) — the survey isn't a 5th step, so the stepper
+           itself is untouched. Q1-Q5 are rendered into
+           [data-survey-questions="1"] by script.js's renderSurveyPage()
+           from SURVEY_PAGE1_QUESTIONS, since all five are the same
+           number/text/5-option-row shape — see that array to edit
+           question text or options. -->
+      <section class="screen" data-screen="survey-1" data-node-id="2052:3447">
+        <img
+          src="assets/completion-progress-bg.svg"
+          alt=""
+          class="pid-progress-bg"
+          data-node-id="2052:3448"
+        />
+        <span class="pid-step pid-step--1" data-node-id="2052:3456">1. 환자번호</span>
+        <span class="pid-step pid-step--2" data-node-id="2052:3459">2. 이미지 업로드</span>
+        <span class="pid-step pid-step--3" data-node-id="2052:3457">3. 문진 챗봇</span>
+        <span class="pid-step pid-step--4 is-active" data-node-id="2052:3458">4. 완료</span>
+
+        <p class="pid-display survey-display" data-node-id="2052:3471" aria-live="polite"></p>
+
+        <div class="survey-questions" data-survey-questions="1"></div>
+
+        <button type="button" class="survey-next" data-survey-next="1" data-next="survey-2" disabled>
+          <span class="survey-next__label" data-node-id="2052:3565">다음</span>
+        </button>
+
+        <div class="pid-footer-bar" data-node-id="2052:3461"></div>
+        <p class="pid-copyright" data-node-id="2052:3462">Copyright © snuh.org · snu.ac.kr</p>
+
+        <div class="pid-textsize" data-node-id="2052:3463">
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--small"
+            data-node-id="2052:3464"
+            aria-label="기본 글씨 크기 (100%)"
+          ></button>
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--large"
+            data-node-id="2052:3465"
+            aria-label="큰 글씨 크기 (125%)"
+          ></button>
+          <p class="pid-textsize__label pid-textsize__label--small" data-node-id="2052:3466">작게</p>
+          <p class="pid-textsize__label pid-textsize__label--large" data-node-id="2052:3467">크게</p>
+          <p class="pid-textsize__title" data-node-id="2052:3468">화면 / 글씨 크기</p>
+          <img
+            src="assets/patient-id-textsize-icon-bg.svg"
+            alt=""
+            class="pid-textsize__icon-bg"
+            data-node-id="2052:3469"
+          />
+          <p class="pid-textsize__icon-label" data-node-id="2052:3470">가</p>
+        </div>
+      </section>
+
+      <!-- ===== Screen: survey-2 / post-visit survey page 2, Q6-Q10
+           (Figma node 2052:3567) =====
+           Q6-Q8 are the same generated 5-option-row shape as page 1
+           (SURVEY_PAGE2_QUESTIONS, rendered into
+           [data-survey-questions="2"]). Q9 (yes/no + conditional detail
+           input) and Q10 (textarea) are one-off shapes not worth
+           generating, so they're written out directly below. -->
+      <section class="screen" data-screen="survey-2" data-node-id="2052:3567">
+        <img
+          src="assets/completion-progress-bg.svg"
+          alt=""
+          class="pid-progress-bg"
+          data-node-id="2052:3568"
+        />
+        <span class="pid-step pid-step--1" data-node-id="2052:3576">1. 환자번호</span>
+        <span class="pid-step pid-step--2" data-node-id="2052:3579">2. 이미지 업로드</span>
+        <span class="pid-step pid-step--3" data-node-id="2052:3577">3. 문진 챗봇</span>
+        <span class="pid-step pid-step--4 is-active" data-node-id="2052:3578">4. 완료</span>
+
+        <p class="pid-display survey-display" data-node-id="2052:3591" aria-live="polite"></p>
+
+        <div class="survey-questions" data-survey-questions="2"></div>
+
+        <div class="survey-q9" data-node-id="2052:3616">
+          <p class="survey-question__number survey-q9__number" data-node-id="2052:3616">Q9.</p>
+          <p class="survey-question__text survey-q9__text" data-node-id="2052:3617">
+            이용 중 작동하지 않거나 예상과 다르게 동작한 부분이 있었나요?
+          </p>
+          <div class="survey-q9__row" role="radiogroup" aria-label="Q9 응답">
+            <button
+              type="button"
+              class="survey-radio survey-radio--yes"
+              data-survey-q9-option="yes"
+              role="radio"
+              aria-checked="false"
+            >
+              <span class="survey-radio__dot" aria-hidden="true"></span>
+              <span class="survey-radio__label" data-node-id="2052:3619">예:</span>
+            </button>
+            <input
+              type="text"
+              class="survey-q9-detail"
+              data-survey-q9-detail
+              placeholder="어떤 문제였는지 간단히 알려주세요."
+              aria-label="Q9 상세 내용"
+              disabled
+            />
+          </div>
+          <button
+            type="button"
+            class="survey-radio survey-radio--no"
+            data-survey-q9-option="no"
+            role="radio"
+            aria-checked="false"
+          >
+            <span class="survey-radio__dot" aria-hidden="true"></span>
+            <span class="survey-radio__label" data-node-id="2052:3621">아니요</span>
+          </button>
+        </div>
+
+        <div class="survey-q10" data-node-id="2052:3628">
+          <p class="survey-question__number survey-q10__number" data-node-id="2052:3628">Q10.</p>
+          <p class="survey-question__text survey-q10__text" data-node-id="2052:3629">
+            이용하면서 불편했거나 개선되었으면 하는 점이 있나요?
+          </p>
+          <textarea
+            class="survey-textarea"
+            data-survey-q10
+            placeholder="어떤 부분이었는지 알려주세요."
+            aria-label="Q10 응답"
+            data-node-id="2052:3638"
+          ></textarea>
+        </div>
+
+        <button type="button" class="survey-next" data-survey-submit disabled>
+          <span class="survey-next__label" data-node-id="2052:3653">제출하기</span>
+        </button>
+
+        <div class="pid-footer-bar" data-node-id="2052:3581"></div>
+        <p class="pid-copyright" data-node-id="2052:3582">Copyright © snuh.org · snu.ac.kr</p>
+
+        <div class="pid-textsize" data-node-id="2052:3583">
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--small"
+            data-node-id="2052:3584"
+            aria-label="기본 글씨 크기 (100%)"
+          ></button>
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--large"
+            data-node-id="2052:3585"
+            aria-label="큰 글씨 크기 (125%)"
+          ></button>
+          <p class="pid-textsize__label pid-textsize__label--small" data-node-id="2052:3586">작게</p>
+          <p class="pid-textsize__label pid-textsize__label--large" data-node-id="2052:3587">크게</p>
+          <p class="pid-textsize__title" data-node-id="2052:3588">화면 / 글씨 크기</p>
+          <img
+            src="assets/patient-id-textsize-icon-bg.svg"
+            alt=""
+            class="pid-textsize__icon-bg"
+            data-node-id="2052:3589"
+          />
+          <p class="pid-textsize__icon-label" data-node-id="2052:3590">가</p>
+        </div>
+      </section>
+
+      <!-- ===== Screen: survey-complete =====
+           Shown after "제출하기" (script.js's submitSurvey()) instead of
+           reloading or leaving the app. Reuses the done screen's own
+           .done-check-icon/.done-title/.done-desc/.done-btn classes
+           as-is (only .done-btn--single is new, to center this screen's
+           one button where .done-btn--exit/--survey together centered
+           as a pair) — no separate visual system for this screen. -->
+      <section class="screen" data-screen="survey-complete">
+        <img
+          src="assets/completion-progress-bg.svg"
+          alt=""
+          class="pid-progress-bg"
+          data-node-id="2052:3448"
+        />
+        <span class="pid-step pid-step--1">1. 환자번호</span>
+        <span class="pid-step pid-step--2">2. 이미지 업로드</span>
+        <span class="pid-step pid-step--3">3. 문진 챗봇</span>
+        <span class="pid-step pid-step--4 is-active">4. 완료</span>
+
+        <p class="pid-display survey-display" aria-live="polite"></p>
+
+        <img src="assets/completion-check-icon.svg" alt="" class="done-check-icon" />
+
+        <h1 class="done-title">설문에 참여해 주셔서 감사합니다.</h1>
+        <p class="done-desc">소중한 의견은 서비스 개선에 활용됩니다.</p>
+
+        <button type="button" class="done-btn done-btn--survey done-btn--single" data-next="onboarding-1">
+          <span class="done-btn__label done-btn__label--survey">나가기</span>
+        </button>
+
+        <div class="pid-footer-bar"></div>
+        <p class="pid-copyright">Copyright © snuh.org · snu.ac.kr</p>
+
+        <div class="pid-textsize">
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--small"
+            aria-label="기본 글씨 크기 (100%)"
+          ></button>
+          <button
+            type="button"
+            class="pid-textsize__btn pid-textsize__btn--large"
+            aria-label="큰 글씨 크기 (125%)"
+          ></button>
+          <p class="pid-textsize__label pid-textsize__label--small">작게</p>
+          <p class="pid-textsize__label pid-textsize__label--large">크게</p>
+          <p class="pid-textsize__title">화면 / 글씨 크기</p>
+          <img src="assets/patient-id-textsize-icon-bg.svg" alt="" class="pid-textsize__icon-bg" />
+          <p class="pid-textsize__icon-label">가</p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="script.js?v=15"></script>
+</body>
+</html>

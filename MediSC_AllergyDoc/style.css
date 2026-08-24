@@ -1,0 +1,4199 @@
+/* =========================================================
+   Base / layout chrome (not part of the Figma design itself —
+   just the neutral page shell that hosts the scaled stage)
+   ========================================================= */
+* {
+  box-sizing: border-box;
+}
+
+/* Text Size control (patient-id screen footer) sets this on <html>, so it
+   stays in effect across every screen. Only rules that opt in with
+   `calc(Npx * var(--text-scale, 1))` respond to it — icons, cards,
+   buttons, inputs and the footer itself deliberately don't reference it,
+   so they stay at their fixed Figma size. */
+:root {
+  --text-scale: 1;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #eceff3;
+  font-family: "Inter", "Apple SD Gothic Neo", sans-serif;
+}
+
+#app-viewport {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: hidden;
+}
+
+/* =========================================================
+   Stage: exact Figma coordinate system (137 x 147).
+   Every screen's children are positioned with the same px
+   values Figma reports; script.js scales #stage uniformly to
+   fit the viewport so the layout/spacing ratio stays identical
+   to the design regardless of real screen size.
+   ========================================================= */
+#stage {
+  position: relative;
+  width: 137px;
+  height: 147px;
+  background: #ffffff;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  flex-shrink: 0;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+
+.screen.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* =========================================================
+   Screen: onboarding-1  (Figma node 163:2)
+   ========================================================= */
+
+/*
+ * Shared onboarding background: a single blended gradient painted directly
+ * on the screen container (no separate rectangle/blob layer on top of it,
+ * so there is no hard-edged seam). Three radial-gradients stacked on one
+ * `background-image`:
+ *   1. a soft lavender/blue glow centered behind that step's hero visual
+ *      (position tunable per step via --ob-glow-x/--ob-glow-y)
+ *   2/3. very subtle light-cyan glows on the left/right edges
+ * All of them fade to fully transparent well before the container edge,
+ * revealing the pale blue-white base color underneath — that shared base
+ * color is what makes the fade read as one continuous background instead
+ * of a rectangle. Every onboarding step section gets this via the shared
+ * `.ob-step` class.
+ */
+.ob-step {
+  background-color: #eef8fb;
+  background-image: radial-gradient(
+      ellipse 62% 56% at var(--ob-glow-x, 50%) var(--ob-glow-y, 46%),
+      rgba(163, 175, 255, 0.55) 0%,
+      rgba(163, 175, 255, 0.24) 45%,
+      rgba(163, 175, 255, 0) 80%
+    ),
+    radial-gradient(
+      ellipse 42% 46% at 3% 55%,
+      rgba(205, 247, 255, 0.4) 0%,
+      rgba(205, 247, 255, 0) 72%
+    ),
+    radial-gradient(
+      ellipse 42% 46% at 97% 55%,
+      rgba(205, 247, 255, 0.4) 0%,
+      rgba(205, 247, 255, 0) 72%
+    );
+}
+
+/* onboarding-2's hero robot sits higher up (top:6px) than onboarding-1's
+   character, so its glow center follows it. */
+.ob-step--onboarding-2 {
+  --ob-glow-y: 26%;
+}
+
+.ob-divider {
+  position: absolute;
+  left: 40px;
+  top: 22px;
+  width: 3px;
+  height: auto;
+  display: block;
+}
+
+.ob-title {
+  position: absolute;
+  left: 54px;
+  top: 14px;
+  width: 103px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 7px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob-subtitle {
+  position: absolute;
+  left: 28px;
+  top: 25px;
+  width: 124px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 3px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob-illustration {
+  position: absolute;
+  left: 23px;
+  top: 32px;
+  width: 87px;
+  height: 87px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* 5-step pagination, shared by every onboarding step. Markup is identical
+   on each screen ([data-active-dot] only differs); script.js reads that
+   attribute and toggles .is-active on the matching dot. */
+.ob-progress {
+  position: absolute;
+  left: 42px;
+  top: 138px;
+  width: 52px;
+  height: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ob-progress__dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #bacbeb;
+  flex-shrink: 0;
+}
+
+.ob-progress__dot.is-active {
+  background: #5783d6;
+}
+
+.ob-next {
+  position: absolute;
+  left: 22px;
+  top: 119px;
+  width: 93px;
+  height: 13px;
+  background: #5783d6;
+  border: none;
+  border-radius: 3px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: filter 0.15s ease, transform 0.05s ease;
+}
+
+.ob-next:hover {
+  filter: brightness(1.05);
+}
+
+.ob-next:active {
+  filter: brightness(0.95);
+  transform: scale(0.99);
+}
+
+.ob-next:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: -2px;
+}
+
+/* Consent-gated screens (onboarding-5) start their [data-next] button with
+   the HTML `disabled` attribute; script.js flips it on/off as checkboxes
+   change. Figma has no disabled state to match, so this gray is a
+   reasonable neutral pulled from the app's own palette. */
+.ob-next:disabled {
+  background: #c7c7c7;
+  cursor: not-allowed;
+}
+
+.ob-next:disabled:hover,
+.ob-next:disabled:active {
+  filter: none;
+  transform: none;
+}
+
+.ob-next__label {
+  position: absolute;
+  left: 40px;
+  top: 4px;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 4px;
+  line-height: normal;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.ob-next__arrow {
+  position: absolute;
+  left: 83px;
+  top: 3px;
+  width: 6px;
+  height: 6px;
+  display: block;
+}
+
+/* =========================================================
+   Screen: onboarding-2  (Figma node 163:29)
+   ========================================================= */
+
+.ob2-illustration {
+  position: absolute;
+  left: 48px;
+  top: 6px;
+  width: 44px;
+  height: 66px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.ob2-title {
+  position: absolute;
+  left: 37px;
+  top: 72px;
+  width: 63px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 6px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob2-body {
+  position: absolute;
+  left: 66.5px;
+  top: 81px;
+  width: 69px;
+  margin: 0;
+  transform: translateX(-50%);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 3px;
+  line-height: normal;
+  color: #000000;
+  text-align: center;
+}
+
+.ob2-steps-icons {
+  position: absolute;
+  left: 35px;
+  top: 99px;
+  width: 64px;
+  height: 13px;
+  display: block;
+}
+
+.ob2-mic-icon {
+  position: absolute;
+  left: 71px;
+  top: 101px;
+  width: 9px;
+  height: 10px;
+  display: block;
+}
+
+.ob2-step-label {
+  position: absolute;
+  top: 114px;
+  width: 19px;
+  transform: translateX(-50%);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 2px;
+  line-height: normal;
+  color: #000000;
+  text-align: center;
+}
+
+.ob2-step-label--1 {
+  left: 41.5px;
+}
+
+.ob2-step-label--2 {
+  left: 58.5px;
+}
+
+.ob2-step-label--3 {
+  left: 75.5px;
+}
+
+.ob2-step-label--4 {
+  left: 92.5px;
+}
+
+/* =========================================================
+   Screen: onboarding-3  (Figma node 163:69)
+   ========================================================= */
+
+.ob-step--onboarding-3 {
+  --ob-glow-y: 26%;
+}
+
+/* Shield glow: 4 blurred, rotated ellipse layers stacked exactly as Figma
+   positions/rotates them. Each ".ob3-blob--n" is the outer box Figma uses
+   to anchor the rotation; ".ob3-blob__inner" carries the rotation itself;
+   the <img> is offset by the same inset every layer shares in the design
+   (their native SVG size already bakes in the blur padding). */
+.ob3-blob {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.ob3-blob__inner {
+  position: relative;
+}
+
+.ob3-blob__inner img {
+  position: absolute;
+  left: -30px;
+  top: -30px;
+  display: block;
+  max-width: none;
+}
+
+.ob3-blob--1 {
+  left: 51.38px;
+  top: 2.28px;
+  width: 49.393px;
+  height: 80.722px;
+}
+.ob3-blob--1 .ob3-blob__inner {
+  width: 79.882px;
+  height: 47.981px;
+  transform: rotate(88.98deg);
+}
+.ob3-blob--1 .ob3-blob__inner img {
+  width: 139.882px;
+  height: 107.981px;
+}
+
+.ob3-blob--2 {
+  left: 58.38px;
+  top: 0.28px;
+  width: 80.502px;
+  height: 83.321px;
+}
+.ob3-blob--2 .ob3-blob__inner {
+  width: 77px;
+  height: 39px;
+  transform: rotate(-48.01deg);
+}
+.ob3-blob--2 .ob3-blob__inner img {
+  width: 137px;
+  height: 99px;
+}
+
+.ob3-blob--3 {
+  left: 8.38px;
+  top: 13.28px;
+  width: 85.536px;
+  height: 75.796px;
+}
+.ob3-blob--3 .ob3-blob__inner {
+  width: 77px;
+  height: 39px;
+  transform: rotate(-145.44deg);
+}
+.ob3-blob--3 .ob3-blob__inner img {
+  width: 137px;
+  height: 99px;
+}
+
+.ob3-blob--4 {
+  left: 8px;
+  top: -12px;
+  width: 86.303px;
+  height: 70.353px;
+}
+.ob3-blob--4 .ob3-blob__inner {
+  width: 77px;
+  height: 39px;
+  transform: rotate(152.27deg);
+}
+.ob3-blob--4 .ob3-blob__inner img {
+  width: 137px;
+  height: 99px;
+}
+
+.ob3-shield-image {
+  position: absolute;
+  left: 44px;
+  top: 4px;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.ob3-title {
+  position: absolute;
+  left: 22px;
+  top: 52px;
+  width: 102px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 6px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob3-check {
+  position: absolute;
+  left: 22px;
+  width: 9px;
+  height: 9px;
+  display: block;
+}
+
+.ob3-check--1 {
+  top: 65px;
+}
+.ob3-check--2 {
+  top: 77px;
+}
+.ob3-check--3 {
+  top: 89px;
+}
+
+.ob3-bullet {
+  position: absolute;
+  left: 32px;
+  width: 92px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 4px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob3-bullet--1 {
+  top: 67px;
+}
+.ob3-bullet--2 {
+  top: 79px;
+}
+.ob3-bullet--3 {
+  top: 91px;
+}
+
+.ob3-policy {
+  position: absolute;
+  left: 25px;
+  top: 104px;
+  width: 86px;
+  height: 10px;
+  background: #efefef;
+  border-radius: 2px;
+}
+
+.ob3-policy__lock {
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 5px;
+  display: block;
+}
+
+.ob3-policy__text {
+  position: absolute;
+  left: 13px;
+  top: 3px;
+  width: 92px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 3px;
+  line-height: normal;
+  color: #000000;
+}
+
+/* =========================================================
+   Screen: onboarding-4  (Figma node 163:101)
+   ========================================================= */
+
+.ob-step--onboarding-4 {
+  --ob-glow-y: 38%;
+}
+
+.ob4-illustration {
+  position: absolute;
+  left: 36px;
+  top: -8px;
+  width: 61px;
+  height: 92px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.ob4-title {
+  position: absolute;
+  left: 36px;
+  top: 64px;
+  width: 66px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 6px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob4-index {
+  position: absolute;
+  left: 29px;
+  width: 7px;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 4px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob4-index--1 {
+  top: 77px;
+}
+.ob4-index--2 {
+  top: 89px;
+}
+.ob4-index--3 {
+  top: 101px;
+}
+
+.ob4-item {
+  position: absolute;
+  left: 37px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 3px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob4-item--1 {
+  top: 77px;
+  width: 72px;
+}
+.ob4-item--2 {
+  top: 89px;
+  width: 74px;
+}
+.ob4-item--3 {
+  top: 101px;
+  width: 73px;
+}
+
+/* =========================================================
+   Screen: onboarding-5  (Figma node 168:19)
+   ========================================================= */
+
+.ob-step--onboarding-5 {
+  --ob-glow-y: 34%;
+}
+
+/* This screen's next-button label reads "문진하러 가기" instead of "다음",
+   so only its horizontal offset differs from the shared .ob-next__label
+   default — box, arrow position and everything else stay the shared ones. */
+.screen[data-screen="onboarding-5"] .ob-next__label {
+  left: 32px;
+  width: 28px;
+}
+
+.ob5-illustration {
+  position: absolute;
+  left: 32px;
+  top: 3px;
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.ob5-title {
+  position: absolute;
+  left: 54px;
+  top: 59px;
+  width: 26px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 6px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob5-subtitle {
+  position: absolute;
+  left: 20px;
+  top: 69px;
+  width: 103px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 3px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob5-text {
+  position: absolute;
+  left: 26px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 3px;
+  line-height: normal;
+  color: #000000;
+}
+
+.ob5-text--1 {
+  top: 79px;
+  width: 88px;
+}
+.ob5-text--2 {
+  top: 93px;
+  width: 87px;
+}
+.ob5-text--3 {
+  top: 107px;
+  width: 90px;
+}
+
+/* Custom checkbox: a hidden native <input> (for real click/keyboard/focus
+   behavior) layered under a styled box, matching Figma's exact unchecked
+   look (4x4, 0.3px black border, no fill). The checked look (blue fill +
+   white check) isn't in the static design — there's no "checked" frame to
+   match — so it reuses the app's existing primary blue. */
+.ob5-check {
+  position: absolute;
+  left: 18px;
+  width: 4px;
+  height: 4px;
+  display: block;
+  cursor: pointer;
+}
+
+.ob5-check--1 {
+  top: 80px;
+}
+.ob5-check--2 {
+  top: 94px;
+}
+.ob5-check--3 {
+  top: 108px;
+}
+
+.ob5-check__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ob5-check__box {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border:1px solid #555;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 98% 98%;
+  pointer-events: none;
+}
+
+/* The checkmark is a background-image SVG on this real sibling <span>, not
+   an ::after on the <input> itself — inputs are replaced elements and
+   can't render pseudo-content in any browser, so ::after on the input
+   would silently no-op. At the checkbox's real on-screen size (~10-13px
+   after the stage's scale transform), a thin 1.x stroke anti-aliases down
+   to near-invisible, so the stroke is kept bold enough to survive that. */
+.ob5-check__input:checked + .ob5-check__box {
+  background-color: transparent;
+  border-color: #5783d6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3 3 7-7' fill='none' stroke='%235783d6' stroke-width='3.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Chromium's own `:focus-visible` heuristic treats a checkbox click as
+   "visible" focus (unlike buttons/links), so CSS alone can't tell a mouse
+   click apart from a Tab press here. `.is-keyboard-nav` is toggled by
+   script.js (added on Tab, removed on mousedown) so the ring only shows
+   for real keyboard navigation. */
+.ob5-check__input:focus + .ob5-check__box {
+  outline: none;
+}
+
+.is-keyboard-nav .ob5-check__input:focus + .ob5-check__box {
+  outline: 0.20px solid #5783d6;
+  outline-offset: 0.15px;
+}
+
+/* =========================================================
+   Screen: patient-id  (Figma "user login", node 2005:57)
+   ========================================================= */
+
+.pid-card {
+  position: absolute;
+  left: 14px;
+  top: 22px;
+  width: 110px;
+  height: 77px;
+  background: #ffffff;
+  border-radius: 3px;
+  box-shadow: 1.5px 2px 4px 1px rgba(0, 0, 0, 0.25);
+}
+
+.pid-input {
+  position: absolute;
+  left: 23px;
+  top: 48.6px;
+  width: 93px;
+  height: 13px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 0 0 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border: 0.5px solid #bacbeb;
+  border-radius: 3px;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(4px * var(--text-scale, 1));
+  color: #0c0b0b;
+  outline: none;
+}
+
+.pid-input::placeholder {
+  color: #acacac;
+  opacity: 1;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(4px * var(--text-scale, 1));
+}
+
+.pid-input:focus {
+  border-color: #5783d6;
+}
+
+.pid-helper-box {
+  position: absolute;
+  left: 23px;
+  top: 64px;
+  width: 93px;
+  height: 8px;
+  background: rgba(186, 203, 235, 0.14);
+  border: 0.3px solid rgba(186, 203, 235, 0.45);
+  border-radius: 3px;
+}
+
+.pid-title {
+  position: absolute;
+  left: 23px;
+  top: 27px;
+  width: 90px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(5px * var(--text-scale, 1));
+  color: #0c0b0b;
+  opacity: 0.8;
+}
+
+.pid-subtitle {
+  position: absolute;
+  left: 23.14px;
+  top: 34.4px;
+  width: 90px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(3px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+}
+
+.pid-label {
+  position: absolute;
+  left: 24px;
+  top: 43px;
+  width: 14px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(3px * var(--text-scale, 1));
+  white-space: nowrap;
+  color: #000000;
+  opacity: 0.8;
+}
+
+.pid-helper-text {
+  position: absolute;
+  left: 33px;
+  top: 66px;
+  width: 82px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(3px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+}
+
+.pid-divider {
+  position: absolute;
+  left: 40px;
+  top: 24px;
+  width: 3px;
+  height: auto;
+  display: block;
+}
+
+.pid-vector-icon {
+  position: absolute;
+  left: 26.8px;
+  top: 66px;
+  width: 4px;
+  height: 4px;
+  display: block;
+}
+
+/* "다음" button for this screen: starts real-disabled (#bacbeb, matching
+   Figma's own disabled-looking state for this node) and script.js flips
+   `disabled` off once the Patient ID input has a value, switching it to
+   the app's primary blue. Reuses .ob-next__label/.ob-next__arrow since
+   their offsets (40/4 and 83/3) happen to match this button exactly. */
+.pid-next {
+  position: absolute;
+  left: 23px;
+  top: 80px;
+  width: 93px;
+  height: 13px;
+  background: #bacbeb;
+  border: none;
+  border-radius: 3px;
+  padding: 0;
+  margin: 0;
+  cursor: not-allowed;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, filter 0.15s ease, transform 0.05s ease;
+}
+
+.pid-next:not(:disabled) {
+  background: #5783d6;
+  cursor: pointer;
+}
+
+.pid-next:not(:disabled):hover {
+  filter: brightness(1.05);
+}
+
+.pid-next:not(:disabled):active {
+  filter: brightness(0.95);
+  transform: scale(0.99);
+}
+
+.pid-next:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: -2px;
+}
+
+/* Scoped to this screen only, so onboarding 1–5's shared .ob-next__label
+   (reused above for this button's "다음" text) doesn't start scaling too. */
+[data-patient-id-screen] .ob-next__label {
+  font-size: calc(4px * var(--text-scale, 1));
+}
+
+.pid-footer-box {
+  position: absolute;
+  left: 14px;
+  top: 108px;
+  width: 110px;
+  height: 17px;
+  background: #ffffff;
+  border: 0.3px solid #bacbeb;
+  border-radius: 3px;
+}
+
+.pid-time-icon-bg {
+  position: absolute;
+  left: 20px;
+  top: 111px;
+  width: 10px;
+  height: 10px;
+  display: block;
+}
+
+.pid-privacy-icon-bg {
+  position: absolute;
+  left: 73px;
+  top: 111px;
+  width: 10px;
+  height: 10px;
+  display: block;
+}
+
+.pid-clock-icon {
+  position: absolute;
+  left: 21px;
+  top: 113px;
+  width: 8px;
+  height: 8px;
+  display: block;
+}
+
+.pid-privacy-icon {
+  position: absolute;
+  left: 74px;
+  top: 112px;
+  width: 9px;
+  height: 9px;
+  display: block;
+}
+
+.pid-time-label {
+  position: absolute;
+  left: 34px;
+  top: 111px;
+  width: 18px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(2.8px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.pid-time-value {
+  position: absolute;
+  left: 34px;
+  top: 116px;
+  width: 18px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(4px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.pid-privacy-label {
+  position: absolute;
+  left: 86px;
+  top: 111px;
+  width: 19px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(2.8px * var(--text-scale, 1));
+  color: #0b0b0b;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+.pid-privacy-text {
+  position: absolute;
+  left: 86px;
+  top: 116px;
+  width: 29px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  font-size: calc(1.8px * var(--text-scale, 1));
+  line-height: calc(2.6px * var(--text-scale, 1));
+  letter-spacing: 0.036px;
+  color: #000000;
+}
+
+.pid-footer-bar {
+  position: absolute;
+  left: 0;
+  top: 135px;
+  width: 137px;
+  height: 12px;
+  background: #6287bc;
+  opacity: 0.26;
+}
+
+.pid-copyright {
+  position: absolute;
+  left: 108px;
+  top: 143px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 1.6px;
+  color: #767676;
+  white-space: nowrap;
+}
+
+.pid-textsize {
+  position: absolute;
+  left: 14px;
+  top: 137px;
+  width: 51px;
+  height: 8px;
+}
+
+.pid-textsize__btn {
+  position: absolute;
+  top: 2px;
+  width: 10px;
+  height: 4px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 0.3px solid transparent;
+  border-radius: 1px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.pid-textsize__btn--small {
+  left: 29px;
+}
+.pid-textsize__btn--large {
+  left: 41px;
+}
+
+/* Visually-active Text Size option: filled with the app's primary blue so
+   it's unambiguous which size is currently selected. */
+.pid-textsize__btn.is-active {
+  background: #5783d6;
+  border-color: #5783d6;
+}
+
+.pid-textsize__label {
+  position: absolute;
+  top: 3px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 2px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.pid-textsize__label--small {
+  left: 32px;
+  color: #b8b8b8;
+}
+.pid-textsize__label--large {
+  left: 44px;
+  color: #a2bada;
+}
+
+.pid-textsize__label.is-active {
+  color: #ffffff;
+}
+
+.pid-textsize__title {
+  position: absolute;
+  left: 9px;
+  top: 3px;
+  width: 27px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 2.6px;
+  color: #ffffff;
+}
+
+.pid-textsize__icon-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  display: block;
+}
+
+.pid-textsize__icon-label {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 3.5px;
+  color: #a2bada;
+}
+
+.pid-progress-bg {
+  position: absolute;
+  left: 15px;
+  top: 12px;
+  width: 108px;
+  height: 6px;
+  display: block;
+}
+
+/* Shared 4-step header ("1. 환자번호" … "4. 완료"), reused by every screen
+   that has this top bar. Position comes from the --N modifier; which step
+   reads as "active" (white) vs inactive (#bacbeb) is just the .is-active
+   class on that screen's own span, so each screen can highlight a
+   different step without duplicating the position rules. */
+.pid-step {
+  position: absolute;
+  top: 14px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(2.5px * var(--text-scale, 1));
+  color: #bacbeb;
+  white-space: nowrap;
+}
+.pid-step.is-active {
+  color: #ffffff;
+  opacity: 0.8;
+}
+.pid-step--1 {
+  left: 20px;
+}
+.pid-step--2 {
+  left: 45px;
+}
+.pid-step--3 {
+  left: 75px;
+}
+.pid-step--4 {
+  left: 106px;
+}
+
+/* Patient ID readout above the step row. Empty (and invisible) until the
+   input has a value; script.js keeps it in sync on every keystroke. */
+.pid-display {
+  position: absolute;
+  left: 24px;
+  top: 7px;
+  width: 90px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(3px * var(--text-scale, 1));
+  color: rgba(0, 0, 0, 0.57);
+  white-space: nowrap;
+}
+
+.pid-exit-bg {
+  position: absolute;
+  left: 116px;
+  top: 3px;
+  width: 14px;
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 2px;
+}
+
+.pid-exit-label {
+  position: absolute;
+  left: 119px;
+  top: 4px;
+  width: 11px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 2.3px;
+  line-height: 3.7px;
+  color: #000000;
+  opacity: 0.8;
+}
+
+/* =========================================================
+   Screen: text-size-control  (Figma node 2019:878)
+   Note: none of this screen's own text uses var(--text-scale) — the two
+   preview boxes show fixed 100%/125% samples so they stay comparable
+   however the current global scale happens to be set; the chosen scale
+   only takes effect from the *next* screen onward.
+   ========================================================= */
+
+.tsc-card-bg {
+  position: absolute;
+  left: 14px;
+  top: 11px;
+  width: 110px;
+  height: 116px;
+  background: #ffffff;
+  border-radius: 3px;
+  box-shadow: 1.5px 2px 4px 1px rgba(0, 0, 0, 0.25);
+}
+
+.tsc-title {
+  position: absolute;
+  left: 23px;
+  top: 26px;
+  width: 91px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 5px;
+  line-height: normal;
+  color: #0c0b0b;
+  opacity: 0.8;
+}
+
+.tsc-subtitle {
+  position: absolute;
+  left: 23px;
+  top: 41px;
+  width: 90px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 3px;
+  line-height: normal;
+  color: #000000;
+  opacity: 0.8;
+}
+
+.tsc-divider {
+  position: absolute;
+  left: 40px;
+  top: 24px;
+  width: 3px;
+  height: auto;
+  display: block;
+}
+
+/* Each card is a single <label> covering the whole clickable area, wrapping
+   its own radio input — clicking anywhere in the card (not just the
+   circle) selects it. Children are positioned relative to the card itself. */
+.tsc-card {
+  position: absolute;
+  top: 52px;
+  width: 45.522px;
+  height: 49.207px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 0.3px solid #bacbeb;
+  border-radius: 5px;
+  cursor: pointer;
+  display: block;
+  transition: border-color 0.15s ease, border-width 0.15s ease;
+}
+
+.tsc-card--default {
+  left: 20px;
+}
+
+.tsc-card--large {
+  left: 71.72px;
+}
+
+.tsc-card:has(.tsc-radio__input:checked) {
+  border-color: #5783d6;
+  border-width: 0.4px;
+}
+
+.tsc-radio__input {
+  position: absolute;
+  left: 4px;
+  top: 5px;
+  width: 5px;
+  height: 5px;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.tsc-radio__circle {
+  position: absolute;
+  left: 4px;
+  top: 5px;
+  width: 5px;
+  height: 5px;
+  box-sizing: border-box;
+  border: 0.3px solid #bacbeb;
+  border-radius: 50%;
+  background: #ffffff;
+  pointer-events: none;
+}
+
+.tsc-radio__circle::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+  background: #5783d6;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tsc-radio__input:checked ~ .tsc-radio__circle {
+  border-color: #5783d6;
+  border-width: 0.4px;
+}
+
+.tsc-radio__input:checked ~ .tsc-radio__circle::after {
+  opacity: 1;
+}
+
+.tsc-radio__input:focus-visible ~ .tsc-radio__circle {
+  outline: 0.3px solid #5783d6;
+  outline-offset: 0.4px;
+}
+
+.tsc-card__label-text {
+  position: absolute;
+  left: 12px;
+  top: 6px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 3.5px;
+  color: #0c0b0b;
+  opacity: 0.8;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.tsc-card:has(.tsc-radio__input:checked) .tsc-card__label-text {
+  color: #5783d6;
+}
+
+.tsc-card__sublabel {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  width: 30px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 2.5px;
+  color: #000000;
+  opacity: 0.8;
+}
+
+.tsc-preview-box {
+  position: absolute;
+  left: 4px;
+  top: 19px;
+  width: 38px;
+  height: 22px;
+  background: rgba(202, 217, 246, 0.27);
+  border-radius: 3px;
+}
+
+.tsc-preview-input {
+  position: absolute;
+  left: 7px;
+  top: 28px;
+  width: 31px;
+  height: 9px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 0.2px solid #bacbeb;
+  border-radius: 2px;
+}
+
+/* Fixed-size mockup text, independent of var(--text-scale) — these are the
+   "compare before you choose" samples, always showing their card's size. */
+.tsc-preview-title {
+  position: absolute;
+  left: 8px;
+  top: 23px;
+  width: 30px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 2.4px;
+  color: #000000;
+  opacity: 0.8;
+}
+
+.tsc-preview-title--large {
+  left: 6.28px;
+  top: 22px;
+  width: 36px;
+  font-size: 3.5px;
+}
+
+.tsc-preview-placeholder {
+  position: absolute;
+  left: 9px;
+  top: 31px;
+  width: 24px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 3px;
+  color: #acacac;
+  opacity: 0.8;
+}
+
+.tsc-preview-placeholder--large {
+  left: 9.28px;
+  top: 30px;
+  font-size: 4px;
+}
+
+/* CTA: same disabled(#bacbeb)/enabled(#5783d6) real-<button-disabled>
+   pattern as .pid-next, just at this screen's own position. Enabling only
+   ever happens via a radio's change event — there's no way back to
+   disabled once a card has been picked. */
+.tsc-next {
+  position: absolute;
+  left: 23px;
+  top: 109px;
+  width: 93px;
+  height: 13px;
+  background: #bacbeb;
+  border: none;
+  border-radius: 3px;
+  padding: 0;
+  margin: 0;
+  cursor: not-allowed;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, filter 0.15s ease, transform 0.05s ease;
+}
+
+.tsc-next:not(:disabled) {
+  background: #5783d6;
+  cursor: pointer;
+}
+
+.tsc-next:not(:disabled):hover {
+  filter: brightness(1.05);
+}
+
+.tsc-next:not(:disabled):active {
+  filter: brightness(0.95);
+  transform: scale(0.99);
+}
+
+.tsc-next:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: -2px;
+}
+
+[data-screen="text-size-control"] .ob-next__label {
+  left: 33px;
+}
+
+.tsc-footer-bar {
+  position: absolute;
+  left: 0;
+  top: 140px;
+  width: 137px;
+  height: 7px;
+  background: #6287bc;
+  opacity: 0.26;
+}
+
+.tsc-copyright {
+  position: absolute;
+  left: 108px;
+  top: 142px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 1.6px;
+  color: #767676;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   Screen: image-upload / Step 2  (Figma node 2009:223)
+   Shares .pid-step / .pid-progress-bg / .pid-exit-bg / .pid-exit-label /
+   .pid-footer-bar / .pid-copyright / .pid-textsize* / .pid-display with
+   the patient-id screen — same top bar, footer and Patient ID readout.
+   ========================================================= */
+
+.iu-title {
+  position: absolute;
+  left: 23px;
+  top: 22px;
+  width: 90px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(5px * var(--text-scale, 1));
+  color: #0c0b0b;
+  opacity: 0.8;
+}
+
+.iu-subtitle {
+  position: absolute;
+  left: 23.14px;
+  top: 29.4px;
+  width: 90px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(2.5px * var(--text-scale, 1));
+  line-height: calc(3.7px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+}
+
+/* "(최대 5장)" is an inline child of the label (not independently
+   absolute-positioned like Figma's export) so it flows right after the
+   label text with real spacing regardless of rendered font width — two
+   separately-positioned absolute elements here overlapped because Inter
+   renders "업로드한 사진" wider than the 17px gap Figma's fixed left
+   values assumed. */
+.iu-uploaded-label {
+  position: absolute;
+  left: 20px;
+  top: 41px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(2.8px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.iu-uploaded-max {
+  font-weight: 400;
+  font-size: calc(2.5px * var(--text-scale, 1));
+  color: #4e4e4e;
+}
+
+.iu-counter {
+  position: absolute;
+  left: 103px;
+  top: 41px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(2.8px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+/* CSS `border-style: dashed` can't control dash length independently of
+   border-width, and at this element's sub-pixel width it rasterized into
+   a few long, coarse dashes. An SVG stroke (viewBox matched 1:1 to the
+   box's own 97x31 size, so it needs no scaling) gives real control over
+   both thickness and dash/gap length for a finer, denser line. */
+.iu-dropzone {
+  position: absolute;
+  left: 19px;
+  top: 49px;
+  width: 97px;
+  height: 31px;
+  box-sizing: border-box;
+  border-radius: 2px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 97 31'%3E%3Crect x='0.75' y='0.75' width='95.5' height='29.5' rx='2' ry='2' fill='none' stroke='%23aabcdf' stroke-width='0.45' stroke-dasharray='2.2 1.8'/%3E%3C/svg%3E");
+}
+
+.iu-empty-state {
+  position: absolute;
+  left: 2px;
+  top: 1px;
+  width: 93px;
+  height: 19px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.iu-cloud-icon {
+  width: 17px;
+  height: 16px;
+  display: block;
+}
+
+.iu-hint {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(2.5px * var(--text-scale, 1));
+  line-height: calc(3.7px * var(--text-scale, 1));
+  color: #838383;
+  opacity: 0.8;
+  text-align: center;
+}
+
+/* Populated state: no Figma reference for this (the static design only
+   shows the empty dropzone), so the thumbnail grid is a reasonable
+   from-scratch layout using the app's existing visual language. */
+.iu-thumbs {
+  position: absolute;
+  left: 2px;
+  top: 1px;
+  width: 93px;
+  height: 19px;
+  display: none;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 1.5px;
+  overflow: hidden;
+}
+
+.iu-thumb {
+  position: relative;
+  width: 16px;
+  height: 18px;
+  margin: 0; /* reset <figure>'s browser-default 1em 40px margin */
+  flex-shrink: 0;
+}
+
+.iu-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1px;
+  display: block;
+  pointer-events: none;
+}
+
+/* Plain "×" glyph, no badge — script.js sets its textContent to "×", this
+   just centers it and strips any circular/bordered/shadowed chrome. The
+   box is still a real 5x5 button (transparent hit area) for a comfortable
+   tap target; only its paint is invisible until you look at the glyph. */
+.iu-thumb__remove {
+  position: absolute;
+  top: 0px;
+  right: -2px;
+  width: 5px;
+  height: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: Arial, "Inter", sans-serif;
+  font-size: 4.5px;
+  line-height: 1;
+  font-weight: 520;
+  color: hsl(0, 0%, 0%);
+  transition: color 0.15s ease;
+}
+
+.iu-thumb__remove:hover {
+  color: #ee544f;
+}
+
+.iu-action {
+  position: absolute;
+  top: 70px;
+  height: 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  background: #ffffff;
+  border: 0.1px solid rgba(191, 191, 191, 0.37);
+  border-radius: 1px;
+  box-shadow: 0.5px 0.6px 1.3px 0 rgba(0, 0, 0, 0.25);
+  padding: 0 1px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.iu-action--camera {
+  left: 33px;
+  width: 30px;
+}
+
+.iu-action--file {
+  left: 73px;
+  width: 30px;
+}
+
+.iu-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.iu-action__icon {
+  width: 4px;
+  height: 4px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.iu-action__label {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(2.6px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+/* Custom checkbox — same hidden-input + sibling-span pattern as the
+   onboarding-5 consent checkboxes, just at this screen's much smaller
+   (2x2) size, so it uses a solid fill instead of an outlined check mark
+   (a stroked glyph wouldn't read at this size). */
+/* Flex row instead of hand-placed absolute top offsets on each child —
+   align-items: center keeps the checkbox vertically centered against the
+   label's actual text regardless of font metrics, which fixed top:1px
+   guesswork couldn't reliably guarantee. gap:2px matches the Figma
+   spacing between the checkbox (2009:276) and label (2009:265). */
+.iu-no-photo {
+  position: absolute;
+  left: 87px;
+  top: 82px;
+  width: 27px;
+  height: 4px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+}
+
+/* appearance: none strips any browser/OS native checkbox rendering (fill,
+   tick, accent-color) that could otherwise show through even at
+   opacity: 0 on some engines — the only visible checkbox is the custom
+   .iu-no-photo__box span below. */
+.iu-no-photo__input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+/* Custom checkbox: white/transparent background in BOTH states, always —
+   there is no rule anywhere (checked or not) that fills this box with a
+   solid color. See .iu-no-photo__input:checked below: it only ever
+   changes border-color and the ::after check mark's opacity. Border color
+   matches Figma node 2009:276 exactly. */
+.iu-no-photo__box {
+  position: relative;
+  flex-shrink: 0;
+  width: 2px;
+  height: 2px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.2px solid #555;
+  background-color: transparent;
+  pointer-events: none;
+}
+
+/* Same hidden-input + sibling-span pattern as the onboarding-5 consent
+   checkboxes: white background stays, only the border turns primary blue
+   and a check mark appears — never a solid filled box. Rendered as a real
+   "✓" text glyph (not an SVG stroke): at this box's real on-screen size
+   (2x2 design units, the tiniest checkbox in the app) a ~1px-wide stroke
+   anti-aliases away to nothing, but a bold font glyph stays legible down
+   to a few screen px. */
+.iu-no-photo__box::after {
+  content: "✓";
+  font-family: Arial, "Inter", sans-serif;
+  font-size: 3.5px;
+  line-height: 3;
+  font-weight: 500;
+  color: #5783d6;
+  opacity: 0;
+}
+
+.iu-no-photo__input:checked ~ .iu-no-photo__box {
+  background-color: transparent;
+  border-color:#dcdcdc;
+}
+
+.iu-no-photo__input:checked ~ .iu-no-photo__box::after {
+  opacity: 1;
+}
+
+.iu-no-photo__input:focus-visible ~ .iu-no-photo__box {
+  outline: 0.3px solid #5783d6;
+  outline-offset: 0.4px;
+}
+
+.iu-no-photo__label {
+  position: relative;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: calc(2.5px * var(--text-scale, 1));
+  line-height: normal;
+  color: #505050;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.iu-guide-card {
+  position: absolute;
+  left: 13px;
+  top: 89px;
+  width: 110px;
+  /* "초점을 맞추고 가까이 촬영" (good-2) wraps to 2 lines once --text-scale
+     grows, which would otherwise run into good-3 below it. The card grows
+     by the same amount good-3 is pushed down (see .iu-guide-icon/text
+     --good-3 below), so at --text-scale:1 this is exactly 28px (unchanged
+     from Figma) and only expands when the large-text mode needs the room.
+     The good/bad columns' left/right placement is untouched either way. */
+  height: calc(28px + (var(--text-scale, 1) - 1) * 18px);
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 3px;
+  box-shadow: 1.5px 2px 4px 1px rgba(0, 0, 0, 0.25);
+}
+
+.iu-guide-title {
+  position: absolute;
+  left: 9px;
+  top: 2px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(2.6px * var(--text-scale, 1));
+  color: #090909;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.iu-guide-help-icon {
+  position: absolute;
+  left: 4px;
+  top: 2px;
+  width: 4px;
+  height: 4px;
+  display: block;
+}
+
+.iu-guide-icon {
+  position: absolute;
+  width: 5px;
+  height: 6px;
+  display: block;
+}
+
+.iu-guide-icon--good-1 {
+  left: 4px;
+  top: 7px;
+}
+.iu-guide-icon--good-2 {
+  left: 4px;
+  top: 12px;
+}
+.iu-guide-icon--good-3 {
+  left: 4px;
+  top: calc(17px + (var(--text-scale, 1) - 1) * 18px);
+}
+.iu-guide-icon--bad-1 {
+  left: 63px;
+  top: 7px;
+}
+.iu-guide-icon--bad-2 {
+  left: 63px;
+  top: 12px;
+}
+.iu-guide-icon--bad-3 {
+  left: 63px;
+  top: 17px;
+}
+
+.iu-guide-text {
+  position: absolute;
+  width: 28px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(2.4px * var(--text-scale, 1));
+  line-height: calc(3px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+}
+
+.iu-guide-text--good-1 {
+  left: 9px;
+  top: 8px;
+}
+.iu-guide-text--good-2 {
+  left: 9px;
+  top: 14px;
+}
+.iu-guide-text--good-3 {
+  left: 9px;
+  top: calc(19px + (var(--text-scale, 1) - 1) * 18px);
+}
+.iu-guide-text--bad-1 {
+  left: 68px;
+  top: 8px;
+}
+.iu-guide-text--bad-2 {
+  left: 68px;
+  top: 13px;
+}
+.iu-guide-text--bad-3 {
+  left: 68px;
+  top: 18px;
+}
+
+.iu-guide-example {
+  position: absolute;
+  top: 4px;
+  width: 15px;
+  height: 20px;
+  border-radius: 1px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.iu-guide-example--good {
+  left: 42px;
+}
+.iu-guide-example--bad {
+  left: 88px;
+}
+
+/* "이전"/"다음" pair — smaller and differently laid out from .ob-next /
+   .pid-next / .tsc-next, so this screen gets its own button classes
+   rather than reusing those (flexbox-centered content, safer than fixed
+   label offsets once text-scale grows the label). */
+.iu-prev {
+  position: absolute;
+  left: 10px;
+  top: 125px;
+  width: 15px;
+  height: 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eaeaea;
+  border: none;
+  border-radius: 2px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.iu-prev:hover {
+  filter: brightness(0.97);
+}
+
+.iu-prev:focus-visible {
+  outline: 1px solid #5783d6;
+  outline-offset: -1px;
+}
+
+.iu-prev__label {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: calc(2.4px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+}
+
+.iu-next {
+  position: absolute;
+  left: 114px;
+  top: 125px;
+  width: 15px;
+  height: 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #bacbeb;
+  border: none;
+  border-radius: 2px;
+  padding: 0;
+  margin: 0;
+  cursor: not-allowed;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, filter 0.15s ease, transform 0.05s ease;
+}
+
+.iu-next:not(:disabled) {
+  background: #5783d6;
+  cursor: pointer;
+}
+
+.iu-next:not(:disabled):hover {
+  filter: brightness(1.05);
+}
+
+.iu-next:not(:disabled):active {
+  filter: brightness(0.95);
+  transform: scale(0.97);
+}
+
+.iu-next:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: -1px;
+}
+
+.iu-next__label {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(2.4px * var(--text-scale, 1));
+  color: #ffffff;
+}
+
+/* =========================================================
+   Screen: chat / Step 3 "문진 챗봇" voice mode  (Figma node 2022:1182)
+   Shares .pid-step / .pid-progress-bg / .pid-footer-bar / .pid-copyright /
+   .pid-textsize* / .pid-display / .iu-prev / .iu-next with earlier
+   screens — same top bar, footer, Patient ID readout and nav buttons.
+   ========================================================= */
+
+/* This screen's CTA reads "문진 종료하기" (Figma node 2052:3345/3346,
+   also shared by voice mode) instead of "다음" — wider than the default
+   .iu-next to fit the longer label, positioned per that node's own
+   x/width rather than the generic button's. */
+.iu-next--end {
+  left: 107px;
+  width: 24px;
+}
+
+.chat-bg-photo {
+  position: absolute;
+  left: 0;
+  top: 25px;
+  width: 137px;
+  height: 93px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* z-index keeps the toggle above whichever mode's background image is
+   underneath it (voice mode's .chat-bg-photo or chat mode's
+   .chat-textmode-photo) regardless of DOM order — both modes' content
+   floats this same shared toggle over their own top-left corner. */
+.chat-toggle-track {
+  position: absolute;
+  left: 2px;
+  top: 29px;
+  width: 36px;
+  height: 7px;
+  background: #dddddd;
+  border-radius: 3px;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.chat-toggle-thumb {
+  position: absolute;
+  left: 3px;
+  top: 30px;
+  width: 17px;
+  height: 5px;
+  background: #ffffff;
+  border-radius: 2px;
+  z-index: 2;
+  cursor: pointer;
+  transition: left 0.2s ease;
+}
+/* script.js's setChatMode() toggles this when 채팅 모드 is selected — the
+   Figma mock only ever shows the thumb under 음성 모드 (no "text mode
+   selected" toggle variant was drawn), so this mirrors its inset from the
+   opposite edge (38px track right edge - 1px inset - 17px width = 20px). */
+.chat-toggle-thumb.is-text {
+  left: 20px;
+}
+
+.chat-toggle-label {
+  position: absolute;
+  top: 31px;
+  width: 9px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: calc(2.2px * var(--text-scale, 1));
+  color: #000000;
+  white-space: nowrap;
+  z-index: 2;
+  cursor: pointer;
+}
+.chat-toggle-label--voice {
+  left: 7.5px;
+}
+.chat-toggle-label--text {
+  left: 24px;
+}
+
+.chat-bubble {
+  position: absolute;
+  left: 32px;
+  top: 85px;
+  width: 73px;
+  height: 11px;
+  background: #ffffff;
+  border-radius: 3px;
+  box-shadow: 1.5px 2px 4px 1px rgba(0, 0, 0, 0.25);
+}
+
+.chat-bubble__text {
+  position: absolute;
+  left: 37px;
+  top: 88px;
+  width: 61px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(2px * var(--text-scale, 1));
+  line-height: calc(2.7px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+}
+
+.chat-bubble__speaker {
+  position: absolute;
+  left: 96px;
+  top: 87px;
+  width: 5px;
+  height: 5px;
+  display: block;
+}
+
+.chat-controlbar {
+  position: absolute;
+  left: 6px;
+  top: 99px;
+  width: 125px;
+  height: 16px;
+  background: rgba(74, 77, 86, 0.69);
+  border-radius: 3px;
+  box-shadow: 1.5px 2px 4px 1px rgba(0, 0, 0, 0.25);
+}
+
+.chat-ctrl-bg {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  display: block;
+}
+.chat-ctrl-bg--transcript {
+  left: 105px;
+  top: 102px;
+}
+.chat-ctrl-bg--end {
+  left: 117px;
+  top: 102px;
+}
+
+/* Plain CSS circle instead of a colored SVG image — lets idle/listening
+   just toggle background-color (see .is-listening below) instead of
+   needing a second red image asset. */
+.chat-mic-main-bg {
+  position: absolute;
+  left: 64px;
+  top: 100px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #4282fc;
+}
+
+/* Invisible hit target sitting exactly over the mic circle — the circle
+   itself stays a plain non-interactive div (matching every other control
+   in this bar) so this is the one real, keyboard-operable control. */
+.chat-mic-toggle {
+  position: absolute;
+  left: 64px;
+  top: 100px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.chat-ctrl-icon {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+.chat-ctrl-icon--main {
+  left: 66.5px;
+  top: 102px;
+  width: 4px;
+  height: 6px;
+}
+.chat-ctrl-icon--transcript {
+  left: 107px;
+  top: 103.1px;
+  width: 3.7px;
+  height: 5.4px;
+}
+.chat-ctrl-icon--end {
+  left: 118px;
+  top: 103px;
+  width: 6px;
+  height: 6px;
+}
+
+.chat-ctrl-label {
+  position: absolute;
+  top: 111px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: calc(2px * var(--text-scale, 1));
+  line-height: calc(2.7px * var(--text-scale, 1));
+  color: #ffffff;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+/* Centered on the mic's own horizontal center (64px left + 10px wide / 2 =
+   69px) via transform instead of a fixed `left` tied to one string's
+   width — needed now that this label's text swaps between "말씀해
+   주세요" and the longer "말씀을 듣고 있습니다." (see script.js). */
+.chat-ctrl-label--main {
+  left: 69px;
+  transform: translateX(-50%);
+}
+.chat-ctrl-label--transcript {
+  left: 105.8px;
+}
+.chat-ctrl-label--end {
+  left: 117.8px;
+}
+
+/* AI 음성 playback volume control (Figma node 2030:2820) — a real
+   <input type="range"> so it's a properly accessible/keyboard-operable
+   control, not a fake slider built from divs. The container is absolute
+   like every other control-bar element (nothing else can shift when this
+   is added/removed), while icon + track lay out via flex internally so
+   the slider always fills the remaining width next to the icon. */
+.chat-volume {
+  position: absolute;
+  left: 7px;
+  top: 103px;
+  width: 22px;
+  height: 6px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.chat-volume__icon {
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.chat-volume__slider {
+  flex: 1;
+  min-width: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  /* Updated in script.js on init and on every `input` event — drives the
+     two-tone track fill below so it always matches the thumb position. */
+  --volume-fill: 50%;
+}
+.chat-volume__slider:focus-visible {
+  outline: none;
+}
+
+/* Track: neutral gray, with the "played" portion up to the thumb in
+   primary blue — Chrome/Safari via a gradient split at --volume-fill,
+   Firefox via the native ::-moz-range-progress element. */
+.chat-volume__slider::-webkit-slider-runnable-track {
+  height: 1px;
+  border-radius: 1px;
+  background: linear-gradient(
+    to right,
+    #4282fc var(--volume-fill),
+    #a5a5a5 var(--volume-fill)
+  );
+}
+.chat-volume__slider::-moz-range-track {
+  height: 1px;
+  border-radius: 1px;
+  background: #a5a5a5;
+}
+.chat-volume__slider::-moz-range-progress {
+  height: 1px;
+  border-radius: 1px;
+  background: #4282fc;
+}
+
+.chat-volume__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #d9d9d9;
+  margin-top: -1px; /* centers the 3px thumb on the 1px track */
+  cursor: pointer;
+}
+.chat-volume__slider::-moz-range-thumb {
+  width: 3px;
+  height: 3px;
+  border: none;
+  border-radius: 50%;
+  background: #d9d9d9;
+  cursor: pointer;
+}
+.chat-volume__slider:focus-visible::-webkit-slider-thumb {
+  outline: 0.3px solid #5783d6;
+  outline-offset: 0.4px;
+}
+.chat-volume__slider:focus-visible::-moz-range-thumb {
+  outline: 0.3px solid #5783d6;
+  outline-offset: 0.4px;
+}
+
+/* Decorative "equalizer" bars strung along the control bar, split into a
+   fixed-width zone on each side of the primary mic. Each zone is its own
+   positioning + clipping boundary (overflow: hidden) so the waveform can
+   never render under the mic circle (64-74px) or bleed into 대화기록
+   (starts at 105px) — a small 2px gap is left on every side. Figma exports
+   each bar as its own icon (24 in total across 4 groups); this reproduces
+   the same repeating tall/short/full pattern with 3 reusable bar assets
+   in a bottom-aligned flex row per zone instead, which is equivalent
+   visually and far easier to keep correct/contained.
+   Pure px sizing throughout (no % or viewport units, no --text-scale) —
+   these zones scale correctly with the rest of #stage at any viewport
+   width or text-size setting without any extra handling needed. */
+.chat-waveform-zone {
+  position: absolute;
+  top: 103px;
+  height: 6px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.chat-waveform-zone--left {
+  left: 36px;
+  width: 26px; /* stops 2px short of the mic circle's left edge (64px) */
+}
+.chat-waveform-zone--right {
+  left: 76px; /* starts 2px past the mic circle's right edge (74px) */
+  width: 27px; /* stops 2px short of 대화기록's circle (105px) */
+}
+
+.chat-waveform {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.9px;
+}
+
+/* Each bar is a plain element shaped by the original blue Figma glyph as a
+   mask, filled via background-color instead of baked into the image —
+   lets idle/listening (see .is-listening below) recolor every bar with
+   one rule instead of needing red duplicates of all 3 bar assets. */
+.chat-waveform__bar {
+  display: block;
+  background-color: #6397f9;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+.chat-waveform__bar--a {
+  width: 4.453px;
+  height: 4.667px;
+  -webkit-mask-image: url("assets/chat-waveform-bar-a.svg");
+  mask-image: url("assets/chat-waveform-bar-a.svg");
+}
+.chat-waveform__bar--b {
+  width: 4.453px;
+  height: 3.333px;
+  -webkit-mask-image: url("assets/chat-waveform-bar-b.svg");
+  mask-image: url("assets/chat-waveform-bar-b.svg");
+}
+.chat-waveform__bar--c {
+  width: 2.672px;
+  height: 6px;
+  -webkit-mask-image: url("assets/chat-waveform-bar-c.svg");
+  mask-image: url("assets/chat-waveform-bar-c.svg");
+}
+
+/* ===== Idle → Listening mic interaction (Figma node 2039:2991) =====
+   script.js's setListening() toggles this one class on .chat-voice-input;
+   every visual change (mic circle, waveform color + pulse, status label
+   text) reads from it, so the two states can never drift out of sync. */
+.chat-voice-input.is-listening .chat-mic-main-bg {
+  background-color: #fd1111;
+}
+.chat-voice-input.is-listening .chat-waveform__bar {
+  background-color: #fd1111;
+  transform-origin: bottom;
+  animation: chat-waveform-pulse 0.9s ease-in-out infinite;
+}
+/* Staggered delays so bars pulse independently rather than in lockstep,
+   reading as continuous speech rather than a single blinking unit. */
+.chat-waveform__bar:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.chat-waveform__bar:nth-child(3) {
+  animation-delay: 0.24s;
+}
+.chat-waveform__bar:nth-child(4) {
+  animation-delay: 0.08s;
+}
+.chat-waveform__bar:nth-child(5) {
+  animation-delay: 0.32s;
+}
+
+/* Bars scale from their own resting height (never past it), so the
+   animation can never grow a bar beyond its zone's 6px height/overflow
+   boundary regardless of scale — no risk of new clipping. */
+@keyframes chat-waveform-pulse {
+  0%,
+  100% {
+    transform: scaleY(0.55);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* =========================================================
+   Guide popup modal (Figma nodes 2001:4 / 2001:73) — guides 1-2 of 3.
+   Lives nested inside .screen[data-screen="chat"], so it can only ever
+   cover this screen. Positions below are absolute within the modal's
+   own box (.chat-guide-modal is the positioning parent for all of it).
+
+   One shared DOM/CSS surface renders whichever guide is current —
+   script.js's renderChatGuideStep() swaps text/src/hidden per step and
+   stamps data-guide-index="1"/"2" on .chat-guide-modal so the two guides'
+   differing sub-layouts (card height, icon position, the "다음 질문 ↓"
+   separator that only guide 2 has) can live as scoped overrides below,
+   without touching guide 1's own (unscoped, default) rules.
+   ========================================================= */
+
+.chat-guide-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(141, 141, 141, 0.35);
+  z-index: 10;
+}
+
+.chat-guide-modal {
+  /* Positioning parent for every element below: all left/top values in
+     this section are relative to THIS box (i.e. already have the modal's
+     own stage offset of left:18px/top:7px subtracted out), not to the
+     137x147 stage. Mixing the two coordinate spaces was the previous bug. */
+  position: absolute;
+  left: 18px;
+  top: 7px;
+  width: 101px;
+  height: 131px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 8px;
+  /* Room the first (of two, stacked) cards can borrow when its text wraps
+     an extra line at --text-scale:1.25 — the second card's top (and the
+     guide-2 "다음 질문" separator sitting between them) shifts down by the
+     same amount so nothing overlaps. Modal height/position stay fixed. */
+  --guide-grow: calc((var(--text-scale, 1) - 1) * 24px);
+  box-shadow: 2px 1.7px 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.chat-guide-badge-bg {
+  position: absolute;
+  left: 44px;
+  top: 6px;
+  width: 13px;
+  height: 12px;
+  display: block;
+}
+
+.chat-guide-number {
+  /* Same box as .chat-guide-badge-bg (the circle behind it), centered via
+     flex instead of hand-placed left/top — keeps the glyph centered in
+     the circle regardless of digit width ("1" vs "2" vs a future "3"). */
+  position: absolute;
+  left: 44px;
+  top: 6px;
+  width: 13px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 7px;
+  line-height: normal;
+  color: #5783d6;
+}
+
+.chat-guide-close {
+  position: absolute;
+  left: 86.4px;
+  top: 5.09px;
+  width: 8.518px;
+  height: 6.359px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: Arial, "Inter", sans-serif;
+  font-size: 5px;
+  line-height: 1;
+  font-weight: 600;
+  color: #333333;
+}
+
+.chat-guide-chevron {
+  position: absolute;
+  top: 57px;
+  width: 3px;
+  height: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.chat-guide-chevron img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+.chat-guide-chevron--prev {
+  left: 9px;
+}
+.chat-guide-chevron--prev img {
+  transform: rotate(180deg);
+}
+.chat-guide-chevron--prev:disabled {
+  visibility: hidden;
+  cursor: default;
+}
+.chat-guide-chevron--next {
+  left: 90px;
+}
+.chat-guide-chevron--next:disabled {
+  visibility: hidden;
+  cursor: default;
+}
+
+.chat-guide-character {
+  position: absolute;
+  left: 23px;
+  top: 28px;
+  width: 57px;
+  height: 62px;
+  object-fit: cover;
+  pointer-events: none;
+}
+/* Guide 2 uses a wider/shorter two-character illustration, positioned and
+   sized per its own Figma frame (node 2001:73, "...removebg-preview 1"). */
+.chat-guide-modal[data-guide-index="2"] .chat-guide-character {
+  left: 18px;
+  width: 69px;
+  height: 61px;
+}
+/* Guide 3's illustration (node 2001:219) is its own size/position again.
+   Its mute-icon speech bubble sits close to the top of the image with
+   little transparent buffer above it (unlike guide 1/2's characters), so
+   unlike them this one shifts down slightly as --guide-grow increases —
+   giving the two-line desc above it (see script.js) room to grow without
+   its second line running into the bubble. */
+.chat-guide-modal[data-guide-index="3"] .chat-guide-character {
+  left: 16px;
+  top: calc(32px + var(--guide-grow));
+  width: 69px;
+  height: 51px;
+}
+
+.chat-guide-decor {
+  position: absolute;
+  left: 86.4px;
+  top: 5.09px;
+  width: 8.518px;
+  height: 6.359px;
+  pointer-events: none;
+}
+
+.chat-guide-title {
+  position: absolute;
+  left: 23px;
+  top: 20px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(5.5px * var(--text-scale, 1));
+  line-height: normal;
+  color: #000000;
+  white-space: nowrap;
+}
+/* Guide 2 and 3's titles are longer than guide 1's, so they're centered
+   across the modal's full content width instead of guide 1's hand-fitted
+   fixed `left` — Figma's own guide 3 title (node 2001:189) uses this same
+   centered layout (-translate-x-1/2 around its midpoint). */
+.chat-guide-modal[data-guide-index="2"] .chat-guide-title,
+.chat-guide-modal[data-guide-index="3"] .chat-guide-title {
+  left: 0;
+  width: 101px;
+  text-align: center;
+}
+/* Guide 2's desc is authored as two full-phrase lines (see script.js) —
+   58px (guide 1's narrower, hand-tuned width) is too tight for either
+   phrase to stay on one line once --text-scale grows font-size, which
+   wraps each into 2 lines and pushes the block down into the character
+   illustration. Widened + re-centered so both phrases keep to one line
+   each at every supported scale. Guide 3's single sentence reuses the same
+   wider centered box (Figma's own node 2001:190 is centered too). */
+.chat-guide-modal[data-guide-index="2"] .chat-guide-desc,
+.chat-guide-modal[data-guide-index="3"] .chat-guide-desc {
+  left: 5.5px;
+  width: 90px;
+  text-align: center;
+}
+
+.chat-guide-desc {
+  position: absolute;
+  left: 21px;
+  top: 29px;
+  width: 58px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(3.5px * var(--text-scale, 1));
+  line-height: calc(5px * var(--text-scale, 1));
+  color: #000000;
+  /* Guide 2's desc is authored as two explicit lines (via \n in
+     script.js) so it can't grow a 3rd auto-wrapped line at --text-scale:
+     1.25 and run into the character illustration below it. Guide 1's
+     single sentence has no \n, so this is a no-op for it. */
+  white-space: pre-line;
+}
+
+.chat-guide-card {
+  position: absolute;
+  left: 6px;
+  width: 88px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 0.2px solid #9c9c9c;
+  border-radius: 3px;
+}
+.chat-guide-card--good {
+  top: 80px;
+  /* Grows downward first when its text wraps an extra line; the second
+     card (and, on guide 2, the separator between them) is pushed down by
+     the same --guide-grow amount below, so nothing overlaps it. */
+  height: calc(16px + var(--guide-grow));
+}
+.chat-guide-card--bad {
+  top: calc(99px + var(--guide-grow));
+}
+/* Guide 2's cards have no label row above the text, so they're shorter
+   (same top offsets as guide 1 — only the height shrinks). Both cards,
+   not just the first — the second was missing this and stayed at guide
+   1's taller 16px, per Figma node 2001:130. */
+.chat-guide-modal[data-guide-index="2"] .chat-guide-card--good {
+  height: calc(12px + var(--guide-grow));
+}
+.chat-guide-modal[data-guide-index="2"] .chat-guide-card--bad {
+  height: 12px;
+}
+/* Guide 3 stacks three cards back-to-back with no gap between them (per
+   Figma nodes 2001:198/2003:221/2003:225 — each card's top is exactly the
+   previous card's bottom), so its own top/height values replace guide 1's
+   shared ones entirely rather than just shrinking height like guide 2. */
+.chat-guide-modal[data-guide-index="3"] .chat-guide-card--good {
+  top: 81px;
+  height: calc(11px + var(--guide-grow));
+  /* Card 2 sits directly below with no gap (see note below) — its own top
+     border already draws the line between them, so this card's bottom
+     border is dropped to avoid the two borders doubling up into a
+     thicker/misaligned-looking line. */
+  border-bottom: none;
+}
+/* Cards 2 and 3 only ever shift by card 1's growth, not grow themselves —
+   same "only the first card self-grows" assumption guide 1 already relies
+   on for its own second card (their own text is short enough in practice
+   not to wrap; see script.js). Letting all three self-grow independently
+   double- and triple-counted the shift and pushed card 3 down into the
+   pagination dots at --text-scale: 1.25. */
+.chat-guide-modal[data-guide-index="3"] .chat-guide-card--bad {
+  top: calc(92px + var(--guide-grow));
+  height: 11px;
+  border-bottom: none; /* see card--good above — card 3's top border draws this line instead */
+}
+/* Guide 3's third card (only guide 3 has one) — hidden by default via the
+   `hidden` attribute in index.html; positioned right after card 2. */
+.chat-guide-card--c3 {
+  top: calc(103px + var(--guide-grow));
+  height: 11px;
+}
+
+.chat-guide-card__icon {
+  position: absolute;
+  display: block;
+}
+.chat-guide-card__icon--good {
+  left: 11px;
+  top: 83px;
+  width: 5px;
+  height: 5px;
+}
+.chat-guide-card__icon--bad {
+  left: 12px;
+  top: calc(102px + var(--guide-grow));
+  width: 4px;
+  height: 5px;
+}
+/* Guide 2 uses the same green check icon for both cards (no red X), each
+   re-centered on its shorter card. src is swapped in script.js. */
+.chat-guide-modal[data-guide-index="2"] .chat-guide-card__icon--good {
+  top: 84px;
+}
+.chat-guide-modal[data-guide-index="2"] .chat-guide-card__icon--bad {
+  left: 11px;
+  top: calc(103px + var(--guide-grow));
+  width: 5px;
+  height: 5px;
+}
+/* Guide 3: all three cards are positive (green check, src swapped in
+   script.js) and sit 2px further left than guide 1/2's icons (Figma
+   node 2001:199 etc). */
+.chat-guide-modal[data-guide-index="3"] .chat-guide-card__icon--good {
+  left: 9px;
+  top: 84px;
+  width: 5px;
+  height: 5px;
+}
+.chat-guide-modal[data-guide-index="3"] .chat-guide-card__icon--bad {
+  left: 9px;
+  top: calc(95px + var(--guide-grow));
+  width: 5px;
+  height: 5px;
+}
+.chat-guide-card__icon--c3 {
+  left: 9px;
+  top: calc(106px + var(--guide-grow));
+  width: 5px;
+  height: 5px;
+}
+/* Same specificity-tie fix as .chat-guide-between__arrow above — without
+   this, `display: block` here would win over the UA `[hidden]` rule by
+   source order and leak guide 3's third card through on guides 1/2. */
+.chat-guide-card__icon--c3[hidden] {
+  display: none;
+}
+
+.chat-guide-card__label {
+  position: absolute;
+  left: 20px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: calc(4px * var(--text-scale, 1));
+  line-height: calc(3px * var(--text-scale, 1));
+}
+.chat-guide-card__label--good {
+  top: 84px;
+  color: #6bb73d;
+}
+.chat-guide-card__label--bad {
+  top: calc(103px + var(--guide-grow));
+  color: #fd1111;
+}
+/* Guide 2 and 3's Figma frames have no "좋은 예" / "좋지 않은 예" labels. */
+.chat-guide-modal[data-guide-index="2"] .chat-guide-card__label,
+.chat-guide-modal[data-guide-index="3"] .chat-guide-card__label {
+  display: none;
+}
+
+.chat-guide-card__text {
+  position: absolute;
+  left: 21px;
+  width: 61px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(3.5px * var(--text-scale, 1));
+  line-height: calc(5px * var(--text-scale, 1));
+  color: #000000;
+}
+.chat-guide-card__text[data-guide-good-text] {
+  top: 89px;
+}
+.chat-guide-card__text[data-guide-bad-text] {
+  top: calc(108px + var(--guide-grow));
+}
+/* Guide 2's card text sits right under the icon since there's no label row. */
+.chat-guide-modal[data-guide-index="2"] .chat-guide-card__text[data-guide-good-text] {
+  top: 84px;
+}
+.chat-guide-modal[data-guide-index="2"] .chat-guide-card__text[data-guide-bad-text] {
+  top: calc(104px + var(--guide-grow));
+}
+/* Guide 3's card text is wider (80px vs 61px) and sits further left (16px
+   vs 21px) than guide 1/2's — its cards are themselves wider-feeling since
+   there's no label row eating into the card, per Figma nodes 2001:191 /
+   2003:220 / 2003:224. */
+.chat-guide-modal[data-guide-index="3"] .chat-guide-card__text[data-guide-good-text] {
+  left: 16px;
+  top: 84px;
+  width: 80px;
+}
+.chat-guide-modal[data-guide-index="3"] .chat-guide-card__text[data-guide-bad-text] {
+  left: 16px;
+  top: calc(95px + var(--guide-grow));
+  width: 80px;
+}
+.chat-guide-card__text--c3 {
+  left: 16px;
+  top: calc(106px + var(--guide-grow));
+  width: 80px;
+}
+
+/* "다음 질문 ↓" separator between guide 2's two cards (Figma node 2001:73
+   only — guide 1 has nothing here, hidden by default via the `hidden`
+   attribute on both elements in index.html). Shifts down with card 1's
+   own --guide-grow so it never overlaps the growing card above it. */
+.chat-guide-between__label {
+  position: absolute;
+  left: 37px;
+  top: calc(93px + var(--guide-grow));
+  width: 17px;
+  height: 5px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(3.2px * var(--text-scale, 1));
+  line-height: calc(5px * var(--text-scale, 1));
+  color: #4f4f4f;
+  text-align: center;
+}
+
+.chat-guide-between__arrow {
+  position: absolute;
+  left: 52px;
+  top: calc(92px + var(--guide-grow));
+  width: 7px;
+  height: 6px;
+  display: block;
+  pointer-events: none;
+}
+/* `display: block` above has the same specificity as the UA stylesheet's
+   `[hidden] { display: none }` and would otherwise win by source order,
+   leaking guide 2's separator through on guide 1. This wins on
+   specificity instead, so the `hidden` attribute set in script.js works. */
+.chat-guide-between__label[hidden],
+.chat-guide-between__arrow[hidden] {
+  display: none;
+}
+
+.chat-guide-dots {
+  position: absolute;
+  left: 37px;
+  top: 121px;
+  width: 28px;
+  height: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chat-guide-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #bacbeb;
+  flex-shrink: 0;
+}
+.chat-guide-dot.is-active {
+  background: #5783d6;
+}
+
+/* Invisible hit target over the existing 대화기록 circle (same box as
+   .chat-ctrl-bg--transcript) — adds a real click target without touching
+   that control's own visuals. */
+.chat-transcript-toggle {
+  position: absolute;
+  left: 105px;
+  top: 102px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* =========================================================
+   Conversation history panel (Figma node 2025:1906) — opened by the
+   대화기록 button. Overlay + right-side drawer, layered over the whole
+   chat screen (nested inside .screen[data-screen="chat"] like the guide
+   popup, so it can only ever appear there). Panel content itself is
+   rendered by script.js from the CONVERSATION_HISTORY array; everything
+   below is chrome + the per-turn styling that array-driven markup uses.
+   ========================================================= */
+
+.chat-history-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(141, 141, 141, 0.35);
+  z-index: 15;
+}
+
+/* left:68/right:0 (rather than a fixed width) so the panel is always
+   flush with the stage's actual right edge (137px) regardless of the 1px
+   rounding differences already tolerated elsewhere between Figma's raw
+   138px frame width and this app's 137px stage — same reasoning as the
+   overlay dims used throughout the guide popup. Only the left corners are
+   rounded since the right edge sits flush against the screen edge. */
+.chat-history-panel {
+  position: absolute;
+  left: 68px;
+  top: 26px;
+  right: 0;
+  height: 103px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 8px 0 0 8px;
+  box-shadow: 2px 1.7px 4px 0 rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Fixed, sits outside .chat-history-list so it never scrolls with the
+   content below it. */
+.chat-history-close {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 5px;
+  height: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+.chat-history-close img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* The only scrollable region — header/close button above stay fixed.
+   Padding/gap here (and every card dimension below) are re-derived
+   directly from Figma node 2025:1906's real geometry (panel-relative,
+   i.e. each Figma x/y minus the panel's own 68/26 offset) rather than
+   arbitrarily compacted — that's what makes the 3-turn history fill the
+   panel the way Figma's own layout does, without needing scroll.
+   overflow-y: auto stays on as a safety net for whenever real content
+   eventually grows past that. Custom thin scrollbar so THAT case doesn't
+   hit the native-scrollbar-at-real-device-size problem this panel had
+   before — native/overlay scrollbars aren't scaled down by #stage's
+   transform the way every other pixel in this app is, so they paint
+   enormous relative to the scaled-down card content. */
+.chat-history-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 6px 6px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  scrollbar-width: thin;
+}
+.chat-history-list::-webkit-scrollbar {
+  width: 1px;
+}
+.chat-history-list::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 1px;
+}
+
+/* height is intentionally NOT set — each card sizes itself to its content
+   (header + optional waveform/quote/summary/next-question below), so
+   nothing inside ever needs to be clipped to fit a fixed box. min-height
+   per status below is the floor matching Figma's own card heights
+   (listening 32 / processing 11 / understood 42, tallest since it also
+   holds the next-question card) — a guarantee, not a forced size; actual
+   content can still grow past it (e.g. at 125% text-scale). */
+.chat-history-turn {
+  background: rgba(241, 246, 255, 0.6);
+  border: 0.1px solid #d6e0ee;
+  border-radius: 3px;
+  box-sizing: border-box;
+  padding: 2px 2.5px;
+  overflow: visible;
+}
+.chat-history-turn--listening {
+  min-height: 32px;
+}
+.chat-history-turn--processing {
+  min-height: 11px;
+}
+.chat-history-turn--understood {
+  min-height: 42px;
+}
+
+.chat-history-turn__header {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Sized to match the icon assets' own native 7x7 viewBox exactly (they
+   were previously shrunk to 5x5, well below their real size, which read
+   as the icon being cut off rather than just small). */
+.chat-history-turn__icon {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow: visible;
+}
+.chat-history-turn--listening .chat-history-turn__icon {
+  background-image: url("assets/chat-history-icon-listening.svg");
+}
+.chat-history-turn--processing .chat-history-turn__icon {
+  background-image: url("assets/chat-history-icon-processing.svg");
+}
+/* Understood: circle drawn via background-color (same blue, no separate
+   circle asset needed) with the check glyph as a real centered <img>
+   child (see script.js) instead of a background-image stretched to a %
+   of a square box — the check glyph's real proportions are 7:8, not
+   square, so forcing it into "45% 55%" of this box distorted/cropped it.
+   Sizing the child to its own aspect ratio in px fixes that outright. */
+.chat-history-turn--understood .chat-history-turn__icon {
+  border-radius: 50%;
+  background-color: #5783d6;
+}
+/* The source SVG's own viewBox (7x8) had a lot of built-in empty margin
+   around the actual checkmark path (which only occupies a 3x3 region of
+   it) — sizing/centering the <img> to that viewBox was mostly scaling
+   whitespace, which is why the glyph read as small and off-center no
+   matter how this box was tuned. Re-exported the asset cropped tightly
+   to the path's real (square) bounds, so this size now maps directly to
+   the visible checkmark and the parent's flex centering actually centers
+   it in the circle. */
+.chat-history-turn__icon-glyph {
+  width: 3.6px;
+  height: 3.6px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+}
+
+.chat-history-turn__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(2.7px * var(--text-scale, 1));
+  line-height: calc(3.6px * var(--text-scale, 1));
+  /* Wraps instead of clipping/ellipsis-ing if it's ever too long for one
+     line at a given text-scale — the card grows to fit since it has no
+     fixed height, rather than the title getting cut off. */
+  white-space: normal;
+  overflow: visible;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.chat-history-turn--listening .chat-history-turn__title {
+  color: #fd1111;
+}
+.chat-history-turn--processing .chat-history-turn__title,
+.chat-history-turn--understood .chat-history-turn__title {
+  color: #5783d6;
+}
+
+.chat-history-turn__duration {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 0.3px;
+  font-family: "Inter", sans-serif;
+  font-size: calc(2px * var(--text-scale, 1));
+  color: #949494;
+}
+
+/* Processing state's "..." — animated so the still-static Figma mockup
+   reads as active/in-progress rather than frozen mid-sentence. */
+.chat-history-dots span {
+  animation: chat-history-dot-blink 1.4s infinite;
+  opacity: 0.2;
+}
+.chat-history-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.chat-history-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes chat-history-dot-blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.2;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* A compact secondary accent under the waveform, not another card — thin
+   hairline border, tight padding that wraps the quote instead of leaving
+   empty space around it, height: auto (no min-height) so it's exactly as
+   tall as its one-to-two lines of text need. */
+.chat-history-turn__quote {
+  margin: 1.2px 0 0;
+  padding: 0.9px 1.6px;
+  box-sizing: border-box;
+  height: auto;
+  min-height: 0;
+  background: rgba(255, 196, 196, 0.31);
+  border: 0.06px solid #fd1111;
+  border-radius: 2px;
+  color: #fd1111;
+  font-family: "Inter", sans-serif;
+  font-size: calc(2.2px * var(--text-scale, 1));
+  line-height: calc(3.1px * var(--text-scale, 1));
+  text-align: left;
+  overflow: visible;
+}
+
+.chat-history-turn__summary {
+  margin: 3px 0 0;
+  color: #000000;
+  font-family: "Inter", sans-serif;
+  font-size: calc(2.6px * var(--text-scale, 1));
+  line-height: calc(3.4px * var(--text-scale, 1));
+}
+
+/* Waveform bars — mask-image on the original blue Figma glyph assets,
+   filled via background-color instead of baked-in color (see
+   .chat-history-waveform--red/--blue below). Sized to Figma's own numbers
+   for THIS panel's waveform (node 2025:1952/1968) — larger than the
+   control bar's waveform, which uses the same asset shapes at a smaller
+   size via the separate .chat-waveform__bar class in the control bar. */
+.chat-history-waveform {
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 8.25px;
+  margin-top: 0.5px;
+}
+/* Bars pulse continuously (both the listening card's red waveform and
+   the next-question card's blue one) — transform: scaleY from their own
+   bottom edge so they can never grow past their resting height, staying
+   safely inside each waveform's fixed layout box regardless of scale.
+   Staggered per-bar delays so they read as organic movement rather than
+   blinking in lockstep, same technique as the control bar's mic waveform. */
+.chat-history-waveform__bar {
+  display: block;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  transform-origin: bottom;
+  animation: chat-history-waveform-pulse 0.9s ease-in-out infinite;
+}
+.chat-history-waveform__bar:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.chat-history-waveform__bar:nth-child(3) {
+  animation-delay: 0.24s;
+}
+.chat-history-waveform__bar:nth-child(4) {
+  animation-delay: 0.08s;
+}
+.chat-history-waveform__bar:nth-child(5) {
+  animation-delay: 0.32s;
+}
+@keyframes chat-history-waveform-pulse {
+  0%,
+  100% {
+    transform: scaleY(0.6);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.chat-history-waveform__bar--a {
+  width: 5.714px;
+  height: 6.417px;
+  -webkit-mask-image: url("assets/chat-waveform-bar-a.svg");
+  mask-image: url("assets/chat-waveform-bar-a.svg");
+}
+.chat-history-waveform__bar--b {
+  width: 5.714px;
+  height: 4.583px;
+  -webkit-mask-image: url("assets/chat-waveform-bar-b.svg");
+  mask-image: url("assets/chat-waveform-bar-b.svg");
+}
+.chat-history-waveform__bar--c {
+  width: 3.429px;
+  height: 8.25px;
+  -webkit-mask-image: url("assets/chat-waveform-bar-c.svg");
+  mask-image: url("assets/chat-waveform-bar-c.svg");
+}
+.chat-history-waveform--red .chat-history-waveform__bar {
+  background-color: #fd1111;
+}
+.chat-history-waveform--blue .chat-history-waveform__bar {
+  background-color: #5783d6;
+}
+/* Real (not cosmetic-transform) smaller dimensions for the next-question
+   card's waveform, matching Figma's own smaller size for it (node
+   2025:2010 etc — about 0.71x the main waveform's bars, not an arbitrary
+   shrink). A CSS `transform: scale()` repaints smaller but keeps
+   reserving its original layout box, so it doesn't actually reclaim
+   vertical space — these are real dimensions instead. */
+.chat-history-waveform--small {
+  gap: 0.7px;
+  height: 5.844px;
+  margin-top: 0.5px;
+}
+.chat-history-waveform--small .chat-history-waveform__bar--a {
+  width: 4.048px;
+  height: 4.545px;
+}
+.chat-history-waveform--small .chat-history-waveform__bar--b {
+  width: 4.048px;
+  height: 3.247px;
+}
+.chat-history-waveform--small .chat-history-waveform__bar--c {
+  width: 2.429px;
+  height: 5.844px;
+}
+
+/* Next-question box — sits inside the "understood" turn, below its
+   summary. Two columns: the mic icon as its own fixed-width column on the
+   left (never sharing a row with the text, so it can't be squeezed/
+   clipped by it), label + question + waveform stacked in the body column
+   on the right. A thin gray hairline border (vs. the outer history
+   card's light blue) marks it as a nested accent, not another full card
+   — height: auto (no min-height) so it wraps tightly around its actual
+   content instead of carrying empty space like a second card. */
+.chat-history-next-question {
+  margin-top: 1.5px;
+  padding: 1px 1.6px;
+  box-sizing: border-box;
+  height: auto;
+  min-height: 0;
+  background: rgba(240, 240, 240, 0.31);
+  border: 0.06px solid #b1b1b1;
+  border-radius: 2px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5px;
+  overflow: visible;
+}
+.chat-history-next-question__icon {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  margin-top: 0.3px;
+  background-image: url("assets/chat-history-icon-mic-mini.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.chat-history-next-question__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: visible;
+}
+.chat-history-next-question__label,
+.chat-history-next-question__text {
+  margin: 0;
+  color: #000000;
+  font-family: "Inter", sans-serif;
+  font-size: calc(2.4px * var(--text-scale, 1));
+  line-height: calc(3.1px * var(--text-scale, 1));
+  white-space: normal;
+  overflow: visible;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.chat-history-next-question__label {
+  font-weight: 500;
+  margin-bottom: 0.5px;
+}
+.chat-history-next-question__text {
+  font-weight: 400;
+  margin-bottom: 0.6px;
+}
+
+/* =========================================================
+   Chat (text) mode (Figma node 2052:3304, "chatbot_text") — alternative
+   interaction mode for the same Step 3 screen, toggled by the
+   .chat-toggle-* control shared with voice mode above (script.js's
+   setChatMode()). Left column: AI helper photo + caption. Right column:
+   progress readout, a scrolling message list, and a fixed input bar.
+   Absolute left/top values below are the same Figma stage coordinates
+   used throughout this screen (0-137 x 0-147); only the internal layout
+   of each component (message rows, chip wrapping, input bar) uses flex.
+   ========================================================= */
+.chat-textmode-photo {
+  position: absolute;
+  left: 4px;
+  top: 24px;
+  width: 67px;
+  height: 97px;
+  border-radius: 5px;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.chat-textmode-caption {
+  position: absolute;
+  left: 15px;
+  top: 105px;
+  width: 46px;
+  min-height: 8px;
+  box-sizing: border-box;
+  background: #ffffff;
+  opacity: 0.99;
+  border-radius: 3px;
+  box-shadow: 1.5px 2px 4px 1px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 2.5px;
+}
+.chat-textmode-caption__text {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(2px * var(--text-scale, 1));
+  line-height: calc(2.7px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+  text-align: center;
+  word-break: keep-all;
+}
+
+/* Vertical hairline between the photo and the chat panel — Figma draws
+   this as a rotated rounded-rectangle card; a plain vertical line reads
+   identically without the rotation hack. */
+.chat-textmode-divider {
+  position: absolute;
+  left: 73px;
+  top: 27px;
+  width: 0.3px;
+  height: 94px;
+  background: #bacbeb;
+  opacity: 0.99;
+}
+
+.chat-textmode-panel {
+  position: absolute;
+  left: 77px;
+  top: 33px;
+  width: 53px;
+  height: 87px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chat-textmode-progress {
+  flex: 0 0 auto;
+}
+.chat-textmode-progress__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px;
+}
+.chat-textmode-progress__label {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(2.5px * var(--text-scale, 1));
+  line-height: calc(3.4px * var(--text-scale, 1));
+  color: #0c0b0b;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.chat-textmode-progress__count {
+  margin: 0;
+  white-space: nowrap;
+}
+.chat-textmode-progress__count-current {
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(4px * var(--text-scale, 1));
+  color: #0c0b0b;
+  opacity: 0.8;
+}
+.chat-textmode-progress__count-total {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: calc(2.6px * var(--text-scale, 1));
+  color: #9a9a9a;
+  opacity: 0.8;
+}
+.chat-textmode-progress__track {
+  position: relative;
+  margin-top: 2px;
+  height: 2px;
+  border-radius: 1px;
+  background: #dddddd;
+  opacity: 0.95;
+}
+/* Width set from CHAT_PROGRESS in script.js (current / total). */
+.chat-textmode-progress__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  border-radius: 1px;
+  background: #b4c3e0;
+}
+
+/* Scrolls internally when the conversation grows past the panel's fixed
+   height — the only thing in chat mode allowed to scroll, per spec, so
+   the progress readout and input bar never move.
+   Positioning context for the custom scrollbar thumb below — the native
+   scrollbar is hidden entirely (see .chat-textmode-messages) rather than
+   resized, since macOS Chrome's overlay-scrollbar mode was confirmed (via
+   a real screenshot) to ignore ::-webkit-scrollbar width and render at
+   the system's own thick affordance width regardless — a limitation, not
+   something more CSS tuning can fix. */
+.chat-textmode-messages-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+.chat-textmode-messages {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* Room for the custom thumb (see below) so it never sits on top of
+     bubble text. */
+  padding-right: 4px;
+  /* Hides the native scrollbar outright in every engine — "none" is a
+     boolean every browser actually honors, unlike an explicit thin width. */
+  scrollbar-width: none;
+}
+.chat-textmode-messages::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+/* Stands in for the native scrollbar — script.js's updateChatScrollbarThumb()
+   sizes/positions this from the list's real scrollTop/scrollHeight on every
+   scroll and re-render, and hides it outright when there's nothing to
+   scroll. A plain div's width is never subject to any browser/OS override. */
+.chat-textmode-scrollbar-thumb {
+  display: none;
+  position: absolute;
+  right: 0.5px;
+  width: 2px;
+  border-radius: 999px;
+  background: #c7d3ea;
+  pointer-events: none;
+}
+
+.chat-textmode-row {
+  display: flex;
+  width: 100%;
+}
+.chat-textmode-row--ai {
+  justify-content: flex-start;
+}
+.chat-textmode-row--user {
+  justify-content: flex-end;
+}
+
+.chat-textmode-bubble {
+  max-width: 31px;
+  min-width: 0;
+  box-sizing: border-box;
+  border-radius: 2px;
+  padding: 1.2px 1.8px;
+}
+.chat-textmode-bubble--ai {
+  background: #e7effe;
+}
+/* Wider cap than the AI bubble's — user replies are free-typed text (not
+   just short mock answers), so this needs more room before wrapping. */
+.chat-textmode-bubble--user {
+  background: #f0f0f0;
+  max-width: 42px;
+}
+
+.chat-textmode-bubble__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 2px;
+}
+.chat-textmode-bubble__label {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(2px * var(--text-scale, 1));
+  line-height: calc(2.8px * var(--text-scale, 1));
+  color: #000000;
+  word-break: keep-all;
+}
+.chat-textmode-bubble__time {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-size: calc(1.3px * var(--text-scale, 1));
+  line-height: calc(2px * var(--text-scale, 1));
+  color: #b2b2b2;
+  white-space: nowrap;
+}
+.chat-textmode-bubble__text {
+  margin: 1px 0 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(1.6px * var(--text-scale, 1));
+  line-height: calc(2.7px * var(--text-scale, 1));
+  color: #000000;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* Quick-selection chips (Figma node 2052:3385) — rendered as a regular
+   entry inside .chat-textmode-messages, directly under the AI message
+   that offers them, so it scrolls with the conversation like Figma shows
+   it under Q3 instead of floating as a separate fixed block. */
+.chat-textmode-quickselect {
+  border: 0.1px solid rgba(185, 204, 239, 0.35);
+  border-radius: 2px;
+  padding: 1.6px 2px;
+  box-sizing: border-box;
+}
+.chat-textmode-quickselect__label {
+  margin: 0 0 1.4px;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: calc(1.8px * var(--text-scale, 1));
+  line-height: calc(2.4px * var(--text-scale, 1));
+  color: hsl(0, 0%, 0%);
+}
+.chat-textmode-quickselect__chips {
+  display: flex;
+  /* Never wraps to a second row — the four chips instead shrink to share
+     the row evenly (flex: 1 1 0 + min-width: 0 below), same width as the
+     input bar directly beneath since both are full-width block children
+     of the same panel column. */
+  flex-wrap: nowrap;
+  gap: 1px;
+}
+.chat-textmode-chip {
+  flex: 1 1 0;
+  min-width: 0;
+  /* Low-alpha border instead of a fully-opaque one — anti-aliasing blends
+     it into the background, reading as a genuinely light stroke rather
+     than hitting the browser's sub-pixel-width rendering floor (which is
+     why shrinking the plain width alone hadn't visibly thinned it further). */
+  border:  none;
+  border-radius: 1px;
+  background: #e7effe;
+  padding: 0.9px 1px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(1.7px * var(--text-scale, 1));
+  line-height: calc(2.3px * var(--text-scale, 1));
+  color: #000000;
+  text-align: center;
+  cursor: pointer;
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.chat-textmode-chip:hover {
+  border-color: #5783d6;
+}
+.chat-textmode-chip:focus-visible {
+  outline: 0.3px solid #5783d6;
+  outline-offset: 0.4px;
+}
+/* Selected state (script.js toggles this on click) — clears on the next
+   chip click or on send, never on manually editing the input afterward
+   (nothing here listens for input changes). */
+.chat-textmode-chip.is-selected {
+  border-color: #5783d6;
+  background: rgba(66, 130, 252, 0.12);
+  color: #5783d6;
+  font-weight: 600;
+}
+
+.chat-textmode-inputbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1.5px;
+  min-height: 6px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 0.2px solid #bbd2ff;
+  border-radius: 3px;
+  padding: 1.2px 1.6px;
+  /* Matches .chat-textmode-messages' padding-right (its scrollbar
+     clearance) so this bar ends up the same rendered width as the
+     quick-select container/message bubbles above it, instead of being
+     4px wider just because it has no scrollbar of its own to clear. */
+  margin-right: 4px;
+}
+.chat-textmode-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  /* Left padding only, on the text itself — keeps the outer input bar's
+     own box/position untouched but stops the first typed character (and
+     the placeholder) from sitting flush against its inner edge. No
+     top/bottom padding and no top/transform offsets anywhere here — a
+     single line's height comes entirely from line-height, and
+     script.js's autoResizeChatInput() (now also called on init, not just
+     on typing) keeps the box's own height matched to that exactly, so
+     there's never leftover space that scrolls the text's top out of view. */
+  padding: 1.5px 0 1.5px 1.2px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(2.2px * var(--text-scale, 1));
+  line-height: calc(3.2px * var(--text-scale, 1));
+  color: #000000;
+  /* Auto-resized by script.js up to this cap (~4 lines), then scrolls
+     internally rather than growing the input bar without bound. */
+  max-height: 16px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #c7d3ea transparent;
+}
+.chat-textmode-input::-webkit-scrollbar {
+  width: 3px;
+}
+.chat-textmode-input::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-textmode-input::-webkit-scrollbar-thumb {
+  background: #c7d3ea;
+  border-radius: 999px;
+}
+.chat-textmode-input::placeholder {
+  color: #999999;
+}
+.chat-textmode-send {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.chat-textmode-send:disabled {
+  cursor: default;
+}
+/* Mask-image (not a plain <img>) so the same glyph can recolor between
+   the disabled/pale and enabled/primary-blue states below, the same
+   technique already used for the control bar's waveform bars. */
+.chat-textmode-send__icon {
+  display: block;
+  width: 4px;
+  height: 4px;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-image: url("assets/chat-textmode-send-icon.svg");
+  mask-image: url("assets/chat-textmode-send-icon.svg");
+  background-color: #b9ccef;
+}
+.chat-textmode-send:not(:disabled) .chat-textmode-send__icon {
+  background-color: #4282fc;
+}
+
+/* =========================================================
+   Screen: done / Step 4 완료 (Figma node 177:509)
+   Shares .pid-step / .pid-progress-bg / .pid-footer-bar / .pid-copyright /
+   .pid-textsize* / .pid-display with every earlier screen — same top bar,
+   footer and Patient ID readout, just this step marked active. Only the
+   completion content below (icon/title/desc/buttons) is new.
+   ========================================================= */
+
+.done-check-icon {
+  position: absolute;
+  left: 57px;
+  top: 35px;
+  width: 23px;
+  height: 23px;
+  display: block;
+}
+
+/* Figma's own title/desc text boxes hug their content at slightly
+   different left offsets (23px/23px but 90px/100px wide) rather than
+   sharing one true center — full stage width + text-align: center here
+   instead reproduces the same visual (each line centered) while actually
+   centering on the stage's real midpoint, matching the check icon above
+   (57px + 23px/2 = 68.5px, exactly half of the 137px stage) and the
+   "centered completion content" this screen is meant to read as. */
+.done-title {
+  position: absolute;
+  left: 0;
+  top: 67px;
+  width: 137px;
+  margin: 0;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(5px * var(--text-scale, 1));
+  line-height: calc(6px * var(--text-scale, 1));
+  color: #0c0b0b;
+  opacity: 0.8;
+}
+
+.done-desc {
+  position: absolute;
+  left: 0;
+  top: 76px;
+  width: 137px;
+  margin: 0;
+  text-align: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(3.2px * var(--text-scale, 1));
+  line-height: calc(3.7px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+}
+
+/* Button pair centered as one 50px-wide unit (18 + 4 gap + 28) on the
+   stage's true midpoint (68.5px), same reasoning as .done-title/.done-desc
+   above — Figma's own left-23px placement reads as a content-hugging
+   artifact of already-centered content, not a deliberate offset. */
+.done-btn {
+  position: absolute;
+  top: 91px;
+  height: 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 2px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+}
+.done-btn:hover {
+  filter: brightness(1.05);
+}
+.done-btn:active {
+  filter: brightness(0.95);
+  transform: scale(0.97);
+}
+.done-btn:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: -1px;
+}
+.done-btn--exit {
+  left: 43.5px;
+  width: 18px;
+  background: #eaeaea;
+}
+.done-btn--survey {
+  left: 65.5px;
+  width: 28px;
+  background: #5783d6;
+}
+
+.done-btn__label {
+  margin: 0;
+  font-weight: 500;
+  font-size: calc(3px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+}
+.done-btn__label--survey {
+  font-weight: 600;
+  color: #ffffff;
+  opacity: 1;
+}
+/* survey-complete has only one button (not the exit/survey pair), so it
+   centers alone at the same width/position as .survey-next's "다음" /
+   "제출하기" (56px + 26px/2 = 69px, i.e. the stage's own midpoint). */
+.done-btn--single {
+  left: 55.5px;
+  width: 26px;
+}
+
+/* =========================================================
+   Screens: survey-1 / survey-2 — post-visit survey, Q1-Q10
+   (Figma nodes 2052:3447 / 2052:3567). Share the done screen's header/
+   footer (.pid-progress-bg reuses completion-progress-bg.svg — step 4
+   stays the active step, the survey is not a 5th step) — only the
+   question/answer/button styling below is new.
+
+   Q1-Q8 share one shape (bold "Qn." + question text + a row of 5 equal-
+   width option pills) and are generated by script.js's
+   renderSurveyQuestions() from SURVEY_PAGE1_QUESTIONS /
+   SURVEY_PAGE2_QUESTIONS into a .survey-question per question — every
+   question block is 21px tall in Figma (22→43→64→85→106), so
+   .survey-question's `top` is set inline per index as i * 21 + 22.
+   ========================================================= */
+.survey-question {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 137px;
+}
+.survey-question__number {
+  position: absolute;
+  left: 10px;
+  top: 0;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: calc(5px * var(--text-scale, 1));
+  color: #0c0b0b;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.survey-question__text {
+  position: absolute;
+  left: 21px;
+  top: 2px;
+  width: 100px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: calc(3.2px * var(--text-scale, 1));
+  line-height: calc(3.7px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+}
+.survey-options {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 117px;
+  display: flex;
+  gap: 3px;
+}
+
+/* role="radio" pills — plain <button>s (same pattern as the chat screen's
+   quick-select chips) rather than native radio inputs, since the pill
+   look doesn't map cleanly onto default radio styling; aria-checked on
+   each carries the real semantics for assistive tech. Selection is
+   communicated by border + fill + text color + weight together (not
+   border alone), per spec. */
+.survey-option {
+  flex: 0 0 21px;
+  width: 21px;
+  height: 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Low-alpha instead of solid #d0d0d0 — Chrome floors sub-pixel border-
+     width at ~0.5 CSS px no matter how small a value is declared (0.3px
+     here still measured 0.5px via getComputedStyle), and that floor times
+     #stage's ~3.14x scale is what read as "too thick"; dropping the
+     alpha is the only lever left to thin it further since the geometric
+     width itself can't go any lower. No box-shadow/outline/pseudo-element
+     is involved — this border is the entire visible stroke. */
+  border: 0.3px solid rgba(208, 208, 208, 0.5);
+  border-radius: 2px;
+  background: #ffffff;
+  box-shadow: none;
+  padding: 0 1px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(3px * var(--text-scale, 1));
+  /* line-height: 1 (not a fixed px value) ties the line box tightly to
+     font-size so flex's align-items: center has no extra leading to
+     mis-distribute — the previous 3.7px line-height (vs. 3px font-size)
+     was the actual cause of the text sitting high in the pill. */
+  line-height: 1;
+  color: #000000;
+  opacity: 0.8;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+}
+.survey-option:hover {
+  border-color: #5783d6;
+}
+.survey-option:focus-visible {
+  outline: 0.3px solid #5783d6;
+  outline-offset: 0.4px;
+}
+.survey-option.is-selected {
+  border-color: #5783d6;
+  background: #e7effe;
+  color: #5783d6;
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* "다음" (survey-1) / "제출하기" (survey-2) — same position/size/behavior
+   as .iu-next: pale + not-allowed while disabled, primary blue once every
+   required answer is in. */
+.survey-next {
+  position: absolute;
+  left: 56px;
+  top: 126px;
+  width: 26px;
+  height: 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #bacbeb;
+  border: none;
+  border-radius: 2px;
+  padding: 0;
+  margin: 0;
+  cursor: not-allowed;
+}
+.survey-next:not(:disabled) {
+  background: #5783d6;
+  cursor: pointer;
+}
+.survey-next:not(:disabled):hover {
+  filter: brightness(1.05);
+}
+.survey-next:not(:disabled):active {
+  filter: brightness(0.95);
+  transform: scale(0.97);
+}
+.survey-next:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: -1px;
+}
+.survey-next__label {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: calc(3px * var(--text-scale, 1));
+  color: #ffffff;
+}
+
+/* Q9 (survey-2 only) — two radio rows ("예:" / "아니요") plus a single-
+   line detail input that only enables when "예" is selected. The input
+   sits in a flex row with the "예" radio (rather than a hardcoded left
+   offset) so it reflows correctly if --text-scale changes the radio
+   label's rendered width instead of overlapping it. */
+.survey-q9 {
+  position: absolute;
+  left: 0;
+  top: 85px;
+  width: 137px;
+}
+.survey-q9__row {
+  /* top is relative to .survey-q9 (already at top: 85px), not the
+     screen — Figma's absolute y93 minus that 85 offset. */
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  width: 117px;
+  height: 5px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.survey-radio--yes {
+  flex: 0 0 auto;
+}
+.survey-radio--no {
+  /* Same relative-to-.survey-q9 reasoning as .survey-q9__row above:
+     Figma's absolute y100 minus .survey-q9's own top: 85px. */
+  position: absolute;
+  left: 10px;
+  top: 15px;
+}
+.survey-radio {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+}
+.survey-radio__dot {
+  position: relative;
+  width: 5px;
+  height: 5px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 0.4px solid #d0d0d0;
+  background: #ffffff;
+}
+.survey-radio.is-selected .survey-radio__dot {
+  border-color: #5783d6;
+}
+.survey-radio.is-selected .survey-radio__dot::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+  background: #5783d6;
+}
+.survey-radio__label {
+  margin: 0;
+  font-weight: 400;
+  font-size: calc(3px * var(--text-scale, 1));
+  color: #000000;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.survey-radio.is-selected .survey-radio__label {
+  color: #5783d6;
+  font-weight: 600;
+  opacity: 1;
+}
+.survey-radio:focus-visible {
+  outline: 0.3px solid #5783d6;
+  outline-offset: 0.4px;
+}
+
+.survey-q9-detail {
+  flex: 1 1 auto;
+  min-width: 0;
+  box-sizing: border-box;
+  border: none;
+  border-bottom: 0.3px solid #d0d0d0;
+  background: transparent;
+  padding: 0 0 0.5px 1px;
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(3px * var(--text-scale, 1));
+  color: #000000;
+}
+.survey-q9-detail::placeholder {
+  color: #b4b4b4;
+}
+.survey-q9-detail:disabled {
+  color: #c7c7c7;
+  border-bottom-color: #e5e5e5;
+  cursor: not-allowed;
+}
+.survey-q9-detail:focus {
+  outline: none;
+  border-bottom-color: #5783d6;
+}
+
+/* Q10 (survey-2 only) — wide textarea, optional. */
+.survey-q10 {
+  position: absolute;
+  left: 0;
+  top: 106px;
+  width: 137px;
+}
+.survey-textarea {
+  position: absolute;
+  left: 10px;
+  top: 9px;
+  width: 117px;
+  height: 8px;
+  box-sizing: border-box;
+  resize: none;
+  border: 0.3px solid #d0d0d0;
+  border-radius: 2px;
+  background: #ffffff;
+  padding: 1px 2px;
+  margin: 0;
+  outline: none;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: calc(3px * var(--text-scale, 1));
+  line-height: calc(3.5px * var(--text-scale, 1));
+  color: #000000;
+}
+.survey-textarea::placeholder {
+  color: #b4b4b4;
+}
+.survey-textarea:focus {
+  border-color: #5783d6;
+}

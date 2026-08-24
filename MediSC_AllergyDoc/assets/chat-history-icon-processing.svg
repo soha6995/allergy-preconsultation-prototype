@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="7" height="7" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="mic_19dp_FFFFFF_FILL0_wght400_GRAD0_opsz20 1" clip-path="url(#clip0_2041_3237)">
+<circle id="Ellipse 25" cx="3.5" cy="3.5" r="3.5" fill="#5783D6"/>
+<g id="audio_capture_19dp_FFFFFF_FILL0_wght400_GRAD0_opsz20 2" clip-path="url(#clip1_2041_3237)">
+<path id="Vector" d="M1.5 5.5V3.5H1.875V4.59375L2.09375 4.375H2.75V4.75H2.25L1.5 5.5ZM4.25 4.75V4.375H5.125V3.5H5.5V4.375C5.5 4.48958 5.46615 4.58073 5.39844 4.64844C5.33073 4.71615 5.23958 4.75 5.125 4.75H4.25ZM3.3125 4V2.25H3.6875V4H3.3125ZM2.5625 3.75V2.5H2.9375V3.75H2.5625ZM4.0625 3.5V2.75H4.4375V3.5H4.0625ZM1.5 2.75V1.875C1.5 1.76042 1.53385 1.66927 1.60156 1.60156C1.66927 1.53385 1.76042 1.5 1.875 1.5H2.75V1.875H1.875V2.75H1.5ZM5.125 2.75V1.875H4.25V1.5H5.125C5.23958 1.5 5.33073 1.53385 5.39844 1.60156C5.46615 1.66927 5.5 1.76042 5.5 1.875V2.75H5.125Z" fill="white"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_2041_3237">
+<rect width="7" height="7" fill="white"/>
+</clipPath>
+<clipPath id="clip1_2041_3237">
+<rect width="5" height="5" fill="white" transform="translate(1 1)"/>
+</clipPath>
+</defs>
+</svg>
